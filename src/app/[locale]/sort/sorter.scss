@@ -14,23 +14,62 @@
 /* This panel splits the screen into two pieces */
 #main-panel {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-grow: 1;
   position: relative;
 }
 
 ul#list {
   display: flex;
-  flex-wrap: wrap;
-  gap: var.$gap-grid;
+  // flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  list-style: none;
+  margin: 0;
+  padding: 10px 20px;
+  // gap: var.$gap-grid;
   height: 100%;
-  overflow: auto;
+  max-height: 22rem;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: var.$spacing-md;
+  background:none;
 }
+
+ul#list > * {
+  flex: 0 0 auto;
+  margin: 0 -30px; /* overlap cards */
+  transition: transform 0.25s ease, z-index 0.25s ease, margin 0.25s ease;
+  transform-origin: bottom center;
+  cursor: grab;
+}
+
+ul#list > *:nth-child(odd) {
+  transform: rotate(-3deg) translateY(34px);
+}
+ul#list > *:nth-child(even) {
+  transform: rotate(3deg) translateY(34px);
+}
+ul#list > *:nth-child(3n) {
+  transform: rotate(1deg) translateY(32px);
+}
+
+ul#list > *:hover {
+  transform: translateY(-25px) scale(1.08) !important;
+  margin: 0 5px;
+  z-index: 999 !important;
+//   border: 1px solid var.$color-primary;
+box-shadow: -5px 10px 5px  rgba(0, 0, 0, 0.155);
+}
+// ul#list > *:hover >* {
+
+//   color: var.$color-primary;
+// }
 
 /* This is the container of the Categories */
 #board {
-  width: 90%;
+  width: 100%;
   align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
@@ -44,39 +83,53 @@ ul#list {
 /* Card */
 
 li.card {
-  background-color: white;
-  border: solid 1px var.$color-border;
-  border-radius: 8px;
+  background-color: rgb(253, 253, 253);
+  border: solid 1px #5D5D5D;
+  border-radius: 26px;
   box-shadow: var.$shadow-sm;
   box-sizing: border-box;
+  // filter: drop-shadow(8px 10px 4px #00000012);
   cursor: move;
   display: flex;
   flex-direction: column;
   gap: var.$spacing-sm;
-  justify-content: center;
-  max-height: 9rem;
+  justify-content: space-evenly;
+  height: 100%;
+  max-height: 15.5rem;
   padding: var.$spacing-sm;
   text-align: center;
   width: 100%;
+  max-width: 10rem;
 
   h4 {
     font-size: 1.2rem;
-    font-weight: 700;
+    font-weight: 800;
+    max-width: 10rem;
     text-transform: lowercase;
-    margin: 0
+    margin: 0;
+    text-wrap: wrap;
+
   }
 
   p {
     margin: 0;
+    max-width: 10rem;
+    text-wrap: wrap;
   }
 
+
+
   &.minimized {
-    border-radius: 0;
+    border-radius: 20px;
     box-shadow: none;
     display: flex;
+    border: solid 1px #999999;
+    max-width: 13.87rem; 
     flex-direction: row;
-    height: auto; width: 100%;
+    height: auto; 
+    width: 100%;
     padding-left: 5px;
+    box-shadow:#1d1d1d35 1px 1px 3px;
     position: relative;
     text-align: start;
     justify-content: flex-start;
@@ -102,9 +155,12 @@ li.card {
 .card-count-footer {
   padding: 0.5rem;
   font-weight: bold;
-  text-align: right;
-  color: grey;
-  border-top: 3px solid #ddd;
+  text-align: center;
+  color: rgb(128, 128, 128);
+  border-top: 1px solid #ddd;
+  width: 100%;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
   background-color: #fafafa;
 }
 
@@ -112,13 +168,13 @@ li.card {
 /* Category */
 .category {
   align-items: center;
-  border: solid 2px #8b8b8b;
-  border-radius: 5px;
+  border: solid 1px #1d1d1d;
+  border-radius: 25px;
   box-shadow: 0 2px 4px rgb(0, 0, 0, 16%);
   display: flex;
   flex-direction: column;
   position: relative;
-  width: 20rem;
+  width: 15rem;
 
   &.max-height {
     height: min(25rem, auto);
@@ -141,6 +197,8 @@ li.card {
   .header {
     align-items: center;
     box-sizing: border-box;
+    border-top-left-radius : 25px;
+    border-top-right-radius : 25px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
     display: flex;
     padding: var.$spacing-xs var.$spacing-md;
@@ -210,6 +268,8 @@ li.card {
     align-items: center;
     background-color: white;
     display: flex;
+    border-radius: 30px;
+
     flex-direction: column;
     justify-content: center;
     height: 100%;
@@ -230,10 +290,11 @@ li.card {
     align-items: center;
     background: 0;
     border-style: dashed;
+    border-radius: 30px;
     box-shadow: none;
     display: flex;
     justify-content: center;
-    height: 25rem;
+    height: 22rem;
     opacity: .8;
 
     img {

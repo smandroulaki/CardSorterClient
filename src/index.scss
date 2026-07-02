@@ -1,5 +1,6 @@
 @use "utils/var" as var;
 
+
 :root {
   --color-black: #181818;
   --color-green: #94F4CD;
@@ -25,7 +26,8 @@
 }
 
 html, body {
-  color: var(--color-black);
+  background-color: #ffffff;
+  color: #111827;
   height: 100%;
   margin: 0;
 }

@@ -6,7 +6,8 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: var.$spacing-lg var.$padding-page;
+  // padding: var.$spacing-lg var.$padding-page;
+  padding: 10px var.$padding-page;
   position: relative;
   z-index: 1;
 

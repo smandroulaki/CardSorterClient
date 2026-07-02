@@ -35,10 +35,11 @@ const CardItem: React.FC<CardItemProps> = ({id, title, description, minimized, p
   }));
 
   return (
+   
     <li
       // @ts-ignore
       ref={dragRef}
-      className={`${!minimized ? 'card' : 'card minimized'} ${
+      className={`${!minimized ? 'card ' : 'card minimized'} ${
         isDragging ? 'dragging' : ''
       }`}
     >
@@ -51,7 +52,7 @@ const CardItem: React.FC<CardItemProps> = ({id, title, description, minimized, p
       )}
 
       {minimized && (
-        <div className="titles">
+        <div className="titles ">
           <h4>{title}</h4>
           {showDescription && <p>{description}</p>}
         </div>

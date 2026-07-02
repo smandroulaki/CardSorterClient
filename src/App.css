@@ -1,4 +1,23 @@
 
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+body {
+  background-color: #ffffff;
+  color: #111827;
+}
+
 
 
 /* SortingHeader */

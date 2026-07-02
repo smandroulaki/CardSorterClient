@@ -57,16 +57,17 @@ export default function page() {
       <DndProvider backend={HTML5Backend}>
         <div id="main-panel">
           {/*@ts-ignore*/}
-          <SplitPane
+          {/* <SplitPane
             className="split-pane"
-            split="vertical"
+            split="horizontal"
             minSize={200}
             maxSize={-300}
             defaultSize={'18rem'}
-          >
-            <List/>
+          > */}
+          
             <Board/>
-          </SplitPane>
+            <List/>
+          {/* </SplitPane> */}
         </div>
       </DndProvider>
 
