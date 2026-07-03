@@ -22,16 +22,17 @@
 ul#list {
   display: flex;
   // flex-wrap: wrap;
-  justify-content: center;
+  // justify-content: center;
+  position:fixed;
+  bottom: 0;
   align-items: flex-end;
   list-style: none;
   margin: 0;
   padding: 10px 20px;
-  // gap: var.$gap-grid;
   height: 100%;
   max-height: 22rem;
   width: 100%;
-  overflow-x: auto;
+  overflow-x: visible;
   overflow-y: hidden;
   padding: var.$spacing-md;
   background:none;
@@ -59,25 +60,63 @@ ul#list > *:hover {
   transform: translateY(-25px) scale(1.08) !important;
   margin: 0 5px;
   z-index: 999 !important;
-//   border: 1px solid var.$color-primary;
-box-shadow: -5px 10px 5px  rgba(0, 0, 0, 0.155);
+  box-shadow: -5px 10px 5px  rgba(0, 0, 0, 0.155);
 }
-// ul#list > *:hover >* {
 
-//   color: var.$color-primary;
-// }
+
 
 /* This is the container of the Categories */
 #board {
+  // position: relative;
   width: 100%;
   align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
   gap: var.$gap-grid;
   height: 100%;
+  // max-height: calc(100dvh - 18rem);
   padding: var.$spacing-md;
   padding-right: 0 !important;
+  margin-bottom: 20rem !important;
   overflow-y:auto;
+}
+
+.clap-animation {
+  pointer-events: none;
+  position: fixed;
+  justify-content: center;
+  top: 10rem;
+  left: 50%;
+  // right: 1rem;
+  font-size: 3.4rem;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(0.45) rotate(-15deg);
+  transition: opacity 0.2s ease;
+  z-index: 30;
+}
+
+.clap-animation.active {
+  opacity: 1;
+  animation: clap-pop 1.2s ease-out forwards;
+}
+
+@keyframes clap-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.45) rotate(-15deg) translateY(0);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.25) rotate(10deg) translateY(-10px);
+  }
+  60% {
+    transform: scale(1) rotate(-8deg) translateY(-18px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) rotate(8deg) translateY(-36px);
+  }
 }
 
 /* Card */

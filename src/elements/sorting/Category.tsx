@@ -1,4 +1,4 @@
-import React, {ChangeEvent, KeyboardEvent, MouseEvent, useState} from 'react';
+import React, {ChangeEvent, KeyboardEvent, MouseEvent, useEffect, useRef, useState} from 'react';
 import {useDrop} from 'react-dnd';
 import {useDispatch, useSelector} from "react-redux";
 
@@ -16,10 +16,11 @@ interface CategoryProps {
   title?: string;
   cards: SortingCard[];
   predefined?: boolean;
+  onClap?: () => void;
 }
 
 
-const Category: React.FC<CategoryProps> = ({id, title, cards, predefined}) => {
+const Category: React.FC<CategoryProps> = ({id, title, cards, predefined, onClap}) => {
   const t = useTranslations("SortingPage");
 
   const [preliminaryTitle, setPreliminaryTitle] = useState(title || "");
@@ -29,7 +30,6 @@ const Category: React.FC<CategoryProps> = ({id, title, cards, predefined}) => {
   const existingTitles = Object.values(categories)
     .filter((cat) => cat.id !== id) // exclude the current one
     .map((cat) => cat.title?.trim().toLowerCase());
-
 
   // State
   const isMinimized = useSelector((state: StateSchema) => (state.sortingBoard.categories[id].isMinimized));
@@ -82,6 +82,9 @@ const Category: React.FC<CategoryProps> = ({id, title, cards, predefined}) => {
       }
 
       dispatch(sortingBoardAction.addCardToCategory({categoryID: id, cardID: card.id}));
+      if (onClap) {
+        onClap();
+      }
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {DropTargetMonitor, useDrop} from 'react-dnd';
 
 import Category from "./Category";
@@ -10,7 +10,17 @@ import { sort } from 'd3';
 
 const Board = () => {
   const t = useTranslations("SortingPage");
-  
+  const [showClap, setShowClap] = useState(false);
+  const clapTimer = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (clapTimer.current) {
+        clearTimeout(clapTimer.current);
+      }
+    };
+  }, []);
+
   // State
   const categories = useSelector((state: StateSchema) => state.sortingBoard.categories);
 
@@ -33,6 +43,12 @@ const Board = () => {
             dispatch(sortingBoardAction.removeCardFromCategory({cardID: card.id, categoryID: card.position, preserve: false}));
           }
           dispatch(sortingBoardAction.createCategory({categoryID: undefined, cardID:card.id}));
+          setShowClap(true);
+          if (clapTimer.current) {
+            clearTimeout(clapTimer.current);
+          }
+          clapTimer.current = setTimeout(() => setShowClap(false), 1200);
+          
       }
      
       // Remove empty categories
@@ -60,7 +76,8 @@ const Board = () => {
   
   return (
     // @ts-ignore
-    <div id="board" ref={dropRef} className="category-board">
+    
+    <div id="board" ref={dropRef} className="category-board">     
       {Object.values(categories).map((category) => (
         <Category
          key={'k' + category.id}
@@ -68,7 +85,13 @@ const Board = () => {
          title={category.title}
          cards={category.cards}
          predefined={category.predefined}
-         
+         onClap={() => {
+           setShowClap(true);
+           if (clapTimer.current) {
+             clearTimeout(clapTimer.current);
+           }
+           clapTimer.current = setTimeout(() => setShowClap(false), 1200);
+         }}
         />
       ))}
       {isOver && (sortType === "open" || sortType === "hybrid") && (
@@ -77,6 +100,7 @@ const Board = () => {
          <p>{t("drop to create category")}</p>
         </div>
       )}
+      <div className={`clap-animation${showClap ? ' active' : ''}`}>👏</div>
     </div>
   )
 };
