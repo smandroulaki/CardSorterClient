@@ -1,0 +1,40 @@
+@use "utils/var" as var;
+
+.progressBarWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  // padding-left: 2rem;
+  // gap: 10px;
+  // flex: 1;
+  height: 4px;
+
+  max-width: 100%;
+}
+
+.progressBarTrack {
+  flex: 1;
+  height: 4px;
+  background-color: #35246616;
+  // border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background-color: #352466;
+
+  border-top-right-radius: 14px;
+  border-bottom-right-radius: 14px;
+  transition: width 0.4s ease;
+}
+
+.progressCount {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #352466;
+  background-color: #35246616;
+  border-radius: 8px;
+  padding: 10px 8px;
+}
