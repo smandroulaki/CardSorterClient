@@ -5,7 +5,8 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  height: 100vh; width: 100vw;
+  height: 100vh;
+  width: 100vw;
   max-width: 100%;
   max-height: 100%;
   position: relative;
@@ -23,7 +24,7 @@ ul#list {
   display: flex;
   // flex-wrap: wrap;
   // justify-content: center;
-  position:fixed;
+  position: fixed;
   bottom: 0;
   align-items: flex-end;
   list-style: none;
@@ -35,13 +36,16 @@ ul#list {
   overflow-x: visible;
   overflow-y: hidden;
   padding: var.$spacing-md;
-  background:none;
+  background: none;
 }
 
 ul#list > * {
   flex: 0 0 auto;
   margin: 0 -30px; /* overlap cards */
-  transition: transform 0.25s ease, z-index 0.25s ease, margin 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    z-index 0.25s ease,
+    margin 0.25s ease;
   transform-origin: bottom center;
   cursor: grab;
 }
@@ -60,27 +64,26 @@ ul#list > *:hover {
   transform: translateY(-25px) scale(1.08) !important;
   margin: 0 5px;
   z-index: 999 !important;
-  box-shadow: -5px 10px 5px  rgba(0, 0, 0, 0.155);
+  box-shadow: -5px 10px 5px rgba(0, 0, 0, 0.155);
 }
-
-
 
 /* This is the container of the Categories */
 #board {
   // position: relative;
-  width: 100%;
+  // width: 100%;
   align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
   gap: var.$gap-grid;
   height: 100%;
-  // max-height: calc(100dvh - 18rem);
+  max-height: calc(100dvh + 18rem);
   padding: var.$spacing-md;
   padding-right: 0 !important;
   margin-bottom: 20rem !important;
-  overflow-y:auto;
+  overflow-y: auto;
 }
 
+// clap animation
 .clap-animation {
   pointer-events: none;
   position: fixed;
@@ -119,11 +122,50 @@ ul#list > *:hover {
   }
 }
 
+// fire animation
+.fire-animation {
+  pointer-events: none;
+  position: fixed;
+  justify-content: center;
+  top: 10rem;
+  left: 50%;
+  // right: 1rem;
+  font-size: 3.4rem;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(0.45) rotate(-15deg);
+  transition: opacity 0.2s ease;
+  z-index: 30;
+}
+
+.fire-animation.active {
+  opacity: 1;
+  animation: fire-pop 1.2s ease-out forwards;
+}
+
+@keyframes fire-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.45) rotate(-15deg) translateY(0);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.25) rotate(10deg) translateY(-10px);
+  }
+  60% {
+    transform: scale(1) rotate(-8deg) translateY(-18px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) rotate(8deg) translateY(-36px);
+  }
+}
+
 /* Card */
 
 li.card {
   background-color: rgb(253, 253, 253);
-  border: solid 1px #5D5D5D;
+  border: solid 1px #5d5d5d;
   border-radius: 26px;
   box-shadow: var.$shadow-sm;
   box-sizing: border-box;
@@ -147,7 +189,6 @@ li.card {
     text-transform: lowercase;
     margin: 0;
     text-wrap: wrap;
-
   }
 
   p {
@@ -156,25 +197,23 @@ li.card {
     text-wrap: wrap;
   }
 
-
-
   &.minimized {
     border-radius: 20px;
     box-shadow: none;
     display: flex;
     border: solid 1px #999999;
-    max-width: 13.87rem; 
+    max-width: 13.87rem;
     flex-direction: row;
-    height: auto; 
+    height: auto;
     width: 100%;
     padding-left: 5px;
-    box-shadow:#1d1d1d35 1px 1px 3px;
+    box-shadow: #1d1d1d35 1px 1px 3px;
     position: relative;
     text-align: start;
     justify-content: flex-start;
 
     .titles p {
-      margin-top: .5rem;
+      margin-top: 0.5rem;
     }
 
     button {
@@ -197,12 +236,11 @@ li.card {
   text-align: center;
   color: rgb(128, 128, 128);
   border-top: 1px solid #ddd;
-  width: 100%;
+  width: 14rem;
   border-bottom-left-radius: 25px;
   border-bottom-right-radius: 25px;
   background-color: #fafafa;
 }
-
 
 /* Category */
 .category {
@@ -236,9 +274,9 @@ li.card {
   .header {
     align-items: center;
     box-sizing: border-box;
-    border-top-left-radius : 25px;
-    border-top-right-radius : 25px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     display: flex;
     padding: var.$spacing-xs var.$spacing-md;
     width: 100%;
@@ -283,7 +321,7 @@ li.card {
     align-items: center;
     display: flex;
     height: 3rem;
-    margin: .5rem;
+    margin: 0.5rem;
     position: relative;
 
     button {
@@ -293,7 +331,7 @@ li.card {
       cursor: pointer;
       height: 100%;
       width: 2rem;
-      margin-left: .5rem;
+      margin-left: 0.5rem;
     }
 
     input {
@@ -315,7 +353,7 @@ li.card {
     width: 100%;
     left: 0;
     top: 0;
-    opacity: .8;
+    opacity: 0.8;
     position: absolute;
     z-index: 10;
 
@@ -334,18 +372,18 @@ li.card {
     display: flex;
     justify-content: center;
     height: 22rem;
-    opacity: .8;
+    opacity: 0.8;
 
     img {
       height: auto;
       width: 50%;
-      opacity: .7;
+      opacity: 0.7;
     }
   }
 
   .popup-container {
     align-items: center;
-    background: rgba(0, 0, 0, .2);
+    background: rgba(0, 0, 0, 0.2);
     display: flex;
     height: 100vh;
     width: 100vw;
@@ -357,7 +395,7 @@ li.card {
 
     .popup {
       background: white;
-      border-radius: .2rem;
+      border-radius: 0.2rem;
       box-shadow: var(--shadow-leveled);
       box-sizing: border-box;
       display: block;
@@ -369,7 +407,7 @@ li.card {
 
       .header {
         align-items: center;
-        background-color: rgba(0, 0, 0, .05);
+        background-color: rgba(0, 0, 0, 0.05);
         display: flex;
         flex-direction: row;
         height: 2rem;
@@ -399,9 +437,11 @@ li.card {
   display: flex;
   flex-direction: column;
   gap: var.$spacing-xl;
-  height: 100vh; width: 100vw;
+  height: 100vh;
+  width: 100vw;
   justify-content: center;
-  left: 0; top: 0;
+  left: 0;
+  top: 0;
   overflow: hidden;
   position: absolute;
   z-index: 100;
@@ -426,35 +466,40 @@ li.card {
       text-transform: uppercase;
     }
   }
-
 }
 
 /* Onboarding screen */
 
 .on-boarding-screen {
-  background-color: rgba(0, 0, 0, .15);
-  height: 100vh; width: 100vw;
-  left: 0; top:0;
+  background-color: rgba(0, 0, 0, 0.15);
+  height: 100vh;
+  width: 100vw;
+  left: 0;
+  top: 0;
   position: absolute;
   z-index: 100;
 }
 
 .on-boarding-screen::before {
   background-color: var.$color-text-primary;
-  content: '';
-  height: 100vh; width: 100vw;
-  left: 0; top:0;
+  content: "";
+  height: 100vh;
+  width: 100vw;
+  left: 0;
+  top: 0;
   opacity: 0;
   position: absolute;
   z-index: 0;
 }
 
 .on-boarding-screen img {
-  height: 40vh; width: auto;
+  height: 40vh;
+  width: auto;
 }
 
 .on-boarding-screen .arrow {
-  height: 10rem; width: auto;
+  height: 10rem;
+  width: auto;
 }
 
 .on-boarding-screen h3 {
@@ -472,7 +517,8 @@ li.card {
   background: var.$color-background-light;
   border-radius: 1rem;
   display: flex;
-  left: 300px; top: 100px;
+  left: 300px;
+  top: 100px;
   padding: var.$spacing-lg;
   position: absolute;
 }
@@ -484,7 +530,8 @@ li.card {
   border-radius: 1rem;
   display: flex;
   flex-direction: column;
-  right: 2rem; top: 100px;
+  right: 2rem;
+  top: 100px;
   padding: 2rem;
   position: absolute;
 }
@@ -552,7 +599,7 @@ li.card {
 
 .toast {
   animation-name: slide-up;
-  animation-duration: .5s;
+  animation-duration: 0.5s;
   animation-timing-function: ease-out;
   position: fixed;
   bottom: 30px;

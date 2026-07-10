@@ -16,10 +16,21 @@ const Board = () => {
   const [showClap, setShowClap] = useState(false);
   const clapTimer = useRef<NodeJS.Timeout | null>(null);
 
+  // Fire animation
+  const [showFire, setShowFire] = useState(false);
+  const fireTimer = useRef<NodeJS.Timeout | null>(null);
+
+  // Track sorts for streaks
+  const lastSortTime = useRef<number | null>(null);
+  const STREAK_WINDOW_MS = 2200;
+
   useEffect(() => {
     return () => {
       if (clapTimer.current) {
         clearTimeout(clapTimer.current);
+      }
+      if (fireTimer.current) {
+        clearTimeout(fireTimer.current);
       }
     };
   }, []);
@@ -37,6 +48,31 @@ const Board = () => {
 
   // Dispatch
   const dispatch = useDispatch();
+
+  // Shared sort animation handler — shows fire on streak, clap otherwise (never both)
+  const handleSortAnimation = () => {
+    const now = Date.now();
+    const isStreak =
+      lastSortTime.current !== null &&
+      now - lastSortTime.current <= STREAK_WINDOW_MS;
+    lastSortTime.current = now;
+
+    if (isStreak) {
+      // Fire: cancel clap, show fire
+      setShowClap(false);
+      if (clapTimer.current) clearTimeout(clapTimer.current);
+      setShowFire(true);
+      if (fireTimer.current) clearTimeout(fireTimer.current);
+      fireTimer.current = setTimeout(() => setShowFire(false), 1200);
+    } else {
+      // Clap: cancel fire, show clap
+      setShowFire(false);
+      if (fireTimer.current) clearTimeout(fireTimer.current);
+      setShowClap(true);
+      if (clapTimer.current) clearTimeout(clapTimer.current);
+      clapTimer.current = setTimeout(() => setShowClap(false), 1200);
+    }
+  };
 
   const [{ isOver }, dropRef] = useDrop({
     accept: "card-drag",
@@ -62,11 +98,7 @@ const Board = () => {
             cardID: card.id,
           }),
         );
-        setShowClap(true);
-        if (clapTimer.current) {
-          clearTimeout(clapTimer.current);
-        }
-        clapTimer.current = setTimeout(() => setShowClap(false), 1200);
+        handleSortAnimation();
       }
 
       // Remove empty categories
@@ -107,12 +139,8 @@ const Board = () => {
             title={category.title}
             cards={category.cards}
             predefined={category.predefined}
-            onClap={() => {
-              setShowClap(true);
-              if (clapTimer.current) {
-                clearTimeout(clapTimer.current);
-              }
-              clapTimer.current = setTimeout(() => setShowClap(false), 1200);
+            onSortAnimation={() => {
+              handleSortAnimation();
             }}
           />
         ))}
@@ -123,6 +151,7 @@ const Board = () => {
           </div>
         )}
         <div className={`clap-animation${showClap ? " active" : ""}`}>👏</div>
+        <div className={`fire-animation${showFire ? " active" : ""}`}>🔥</div>
       </div>
     </div>
   );
