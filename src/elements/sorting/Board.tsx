@@ -127,7 +127,7 @@ const Board = () => {
   });
 
   return (
-    <div>
+    <>
       <ProgressBar />
 
       {/* @ts-ignore */}
@@ -153,7 +153,7 @@ const Board = () => {
         <div className={`clap-animation${showClap ? " active" : ""}`}>👏</div>
         <div className={`fire-animation${showFire ? " active" : ""}`}>🔥</div>
       </div>
-    </div>
+    </>
   );
 };
 

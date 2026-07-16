@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import React from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import SplitPane from 'react-split-pane';
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import SplitPane from "react-split-pane";
 
-import List from 'elements/sorting/List';
+import List from "elements/sorting/List";
 import * as uiActions from "actions/sorting/uiAction";
 import StateSchema from "reducers/StateSchema";
 import ConfirmPopUp from "elements/sorting/ConfirmPopUp";
@@ -15,27 +15,39 @@ import ErrorToast from "elements/sorting/ErrorToast";
 import Board from "elements/sorting/Board";
 import OnBoarding from "elements/sorting/OnBoarding";
 import DescriptionPopup from "elements/sorting/DescriptionPopup";
-import InstructionsPopup from 'elements/sorting/InstructionsPopup';
+import InstructionsPopup from "elements/sorting/InstructionsPopup";
 import CommentPopup from "elements/sorting/CommentPopup";
-import {useTranslations} from "next-intl";
+import { useTranslations } from "next-intl";
 import LoadSortData from "elements/sorting/LoadSortData";
-import {useParams} from "next/navigation";
+import { useParams } from "next/navigation";
+import ShowAllCards from "elements/sorting/ShowAllCards";
 
 export default function page() {
-  const {id} = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const t = useTranslations("SortingPage");
-  
- 
 
   // State
-  const showOnboarding = useSelector((state: StateSchema) => state.sortingUi.showOnBoarding);
-  const errorNoCategories = useSelector((state: StateSchema) => state.sortingUi.errors.noCategoriesCreated);
-  const errorNoTitle = useSelector((state: StateSchema) => (state.sortingUi.errors.categoryMissingTitle));
-  const errorSameCategories = useSelector((state: StateSchema) => (state.sortingUi.errors?.categoriesHaveTheSameName));
-  const sameCategoryNames = useSelector((state: StateSchema) => (state.sortingUi.errors?.sameCategoryList));
-  const commentSaved = useSelector((state: StateSchema) => state.sortingUi.commentSaved);
-
-  
+  const showOnboarding = useSelector(
+    (state: StateSchema) => state.sortingUi.showOnBoarding,
+  );
+  const showAllCards = useSelector(
+    (state: StateSchema) => state.sortingUi.showAllCards,
+  );
+  const errorNoCategories = useSelector(
+    (state: StateSchema) => state.sortingUi.errors.noCategoriesCreated,
+  );
+  const errorNoTitle = useSelector(
+    (state: StateSchema) => state.sortingUi.errors.categoryMissingTitle,
+  );
+  const errorSameCategories = useSelector(
+    (state: StateSchema) => state.sortingUi.errors?.categoriesHaveTheSameName,
+  );
+  const sameCategoryNames = useSelector(
+    (state: StateSchema) => state.sortingUi.errors?.sameCategoryList,
+  );
+  const commentSaved = useSelector(
+    (state: StateSchema) => state.sortingUi.commentSaved,
+  );
 
   // Dispatch
   const dispatch = useDispatch<any>();
@@ -48,8 +60,6 @@ export default function page() {
       return () => clearTimeout(timer);
     }
   }, [commentSaved]);
-
-  
 
   return (
     <>
@@ -64,9 +74,9 @@ export default function page() {
             maxSize={-300}
             defaultSize={'18rem'}
           > */}
-          
-            <Board/>
-            <List/>
+          {!showOnboarding && !showAllCards && <Board />}
+          {!showOnboarding && !showAllCards && <List />}
+
           {/* </SplitPane> */}
         </div>
       </DndProvider>
@@ -76,30 +86,24 @@ export default function page() {
       <InstructionsPopup />
       <ConfirmPopUp />
 
-      {
-         showOnboarding &&
-         <OnBoarding />
-      }
+      {showOnboarding && <OnBoarding />}
+      {showAllCards && <ShowAllCards />}
 
-      {
-        errorNoCategories &&
-          <ErrorToast message={t("error no categories created")} />
-      }
+      {errorNoCategories && (
+        <ErrorToast message={t("error no categories created")} />
+      )}
 
-      {
-        errorNoTitle &&
-          <ErrorToast message={t("error empty title")} />
-      }
+      {errorNoTitle && <ErrorToast message={t("error empty title")} />}
 
-      {errorSameCategories &&
-        <ErrorToast message={t("error duplicate titles") + (sameCategoryNames || []).join(', ')} />
-      }
+      {errorSameCategories && (
+        <ErrorToast
+          message={
+            t("error duplicate titles") + (sameCategoryNames || []).join(", ")
+          }
+        />
+      )}
 
-      {commentSaved && 
-         <ErrorToast message={t("comment saved")} />
-      }
-
+      {commentSaved && <ErrorToast message={t("comment saved")} />}
     </>
   );
-};
-
+}

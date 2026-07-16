@@ -20,10 +20,43 @@
   position: relative;
 }
 
+.all-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  padding: 5rem;
+  padding-bottom: 0;
+  // overflow-y: auto;
+
+  li.card {
+    height: 19rem;
+  }
+}
+
+.show-all {
+  background-color: #10101061;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100dvh;
+  width: 100%;
+  z-index: 10;
+  overflow-y: auto;
+}
+
+.start-btn {
+  display: flex;
+  position: relative;
+  justify-content: end;
+  justify-items: flex-end;
+  margin-right: 5rem;
+  margin-bottom: 5rem;
+}
+
 ul#list {
   display: flex;
   // flex-wrap: wrap;
-  // justify-content: center;
+  justify-content: safe center;
   position: fixed;
   bottom: 0;
   align-items: flex-end;
@@ -31,9 +64,9 @@ ul#list {
   margin: 0;
   padding: 10px 20px;
   height: 100%;
-  max-height: 22rem;
+  max-height: 19rem;
   width: 100%;
-  overflow-x: visible;
+  overflow-x: auto;
   overflow-y: hidden;
   padding: var.$spacing-md;
   background: none;
@@ -60,6 +93,48 @@ ul#list > *:nth-child(3n) {
   transform: rotate(1deg) translateY(32px);
 }
 
+@keyframes dealOdd {
+  0% {
+    opacity: 0;
+    transform: translateY(-120px) translateX(60px) rotate(15deg) scale(0.7);
+  }
+  70% {
+    transform: translateY(28px) rotate(-4deg) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-3deg) translateY(34px);
+  }
+}
+
+@keyframes dealEven {
+  0% {
+    opacity: 0;
+    transform: translateY(-120px) translateX(60px) rotate(15deg) scale(0.7);
+  }
+  70% {
+    transform: translateY(28px) rotate(4deg) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(3deg) translateY(34px);
+  }
+}
+
+@keyframes deal3n {
+  0% {
+    opacity: 0;
+    transform: translateY(-120px) translateX(60px) rotate(15deg) scale(0.7);
+  }
+  70% {
+    transform: translateY(26px) rotate(2deg) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(1deg) translateY(32px);
+  }
+}
+
 ul#list > *:hover {
   transform: translateY(-25px) scale(1.08) !important;
   margin: 0 5px;
@@ -79,7 +154,7 @@ ul#list > *:hover {
   max-height: calc(100dvh + 18rem);
   padding: var.$spacing-md;
   padding-right: 0 !important;
-  margin-bottom: 20rem !important;
+  margin-bottom: 19rem !important;
   overflow-y: auto;
 }
 
@@ -371,7 +446,9 @@ li.card {
     box-shadow: none;
     display: flex;
     justify-content: center;
-    height: 22rem;
+    // height: 22rem;
+    height: 17rem;
+
     opacity: 0.8;
 
     img {
@@ -616,4 +693,24 @@ li.card {
   display: block;
   opacity: 1;
   transform: translateX(-50%) translateY(-10px); /* Add a slight upward animation */
+}
+
+@keyframes dealFromDeck {
+  0% {
+    opacity: 0;
+    transform: translateY(360px) translateX(20px) rotate(8deg) scale(0.85);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(6px) translateX(-2px) rotate(-1deg) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+  }
+}
+
+.card-item {
+  opacity: 0;
+  animation: dealFromDeck 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 }

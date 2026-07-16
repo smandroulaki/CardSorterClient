@@ -80,18 +80,24 @@ const SortingHeader = () => {
   const onInstructionsClick = () =>
     dispatch(uiAction.toggleInstructionsPopup(true));
 
+  const onShowAllClick = () => dispatch(uiAction.showAllCards(true));
+
   return (
     <header className={styles.sortingHeader}>
       <h1 className={styles.logo}>Card Sorter</h1>
       <div className={styles.btnContainer}>
         <ProgressCount />
+        <Button variant="text" onClick={onShowAllClick}>
+          {t("show all")}
+        </Button>
         <Button variant="text" onClick={onInstructionsClick}>
           {t("instructions")}
         </Button>
         <Button variant="text" onClick={onDescriptionClick}>
           {t("show description")}
         </Button>
-        {/*<button className="undo"></button>*/}
+
+        {/* <button className="undo"></button> */}
         {/*<button className="help"></button>*/}
         {/* </div>
       <div className={styles.btnContainer}> */}

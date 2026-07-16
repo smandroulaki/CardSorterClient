@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import * as sortingBoardAction from "../../actions/sorting/sortingBoardAction";
 import IconButton from "@mui/material/IconButton";
 
-interface CardItemProps {
+interface CardContentProps {
   id: number;
   title: string;
   description?: string;
@@ -13,7 +13,7 @@ interface CardItemProps {
   showDescription?: boolean;
 }
 
-const CardItem: React.FC<CardItemProps> = ({
+const CardContent: React.FC<CardContentProps> = ({
   id,
   title,
   description,
@@ -32,22 +32,8 @@ const CardItem: React.FC<CardItemProps> = ({
     }
   };
 
-  const [{ isDragging }, dragRef] = useDrag(() => ({
-    type: "card-drag",
-    item: { id, position },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }));
-
   return (
-    <li
-      // @ts-ignore
-      ref={dragRef}
-      className={`${!minimized ? "card " : "card minimized"} ${
-        isDragging ? "dragging" : ""
-      }`}
-    >
+    <li className={`${!minimized ? "card " : "card minimized"} `}>
       {/* Show the description */}
       {!minimized && (
         <>
@@ -77,4 +63,4 @@ const CardItem: React.FC<CardItemProps> = ({
   );
 };
 
-export default CardItem;
+export default CardContent;
