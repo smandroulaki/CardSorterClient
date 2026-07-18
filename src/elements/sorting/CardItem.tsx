@@ -44,7 +44,7 @@ const CardItem: React.FC<CardItemProps> = ({
     <li
       // @ts-ignore
       ref={dragRef}
-      className={`${!minimized ? "card " : "card minimized"} ${
+      className={`${!minimized ? "card" : "card minimized"} ${
         isDragging ? "dragging" : ""
       }`}
     >

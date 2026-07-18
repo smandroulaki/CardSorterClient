@@ -24,6 +24,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 16px;
+  // display: flex;
+  // flex-direction: row;
+  max-width: 100dvw;
+  // flex-wrap: wrap;
   padding: 5rem;
   padding-bottom: 0;
   // overflow-y: auto;
@@ -32,6 +36,30 @@
     height: 19rem;
   }
 }
+
+// .all-list.closed {
+//   display: flex;
+// }
+
+// .all-list.closed > *:nth-child(odd) {
+//   transform: rotate(-3deg) translateY(34px);
+// }
+// .all-list.closed > *:nth-child(even) {
+//   transform: rotate(3deg) translateY(34px);
+// }
+// .all-list.closed > *:nth-child(3n) {
+//   transform: rotate(1deg) translateY(32px);
+// }
+// .closing {
+//   flex: 0 0 auto;
+//   margin: 0 -80px; /* overlap cards */
+//   transition:
+//     transform 0.25s ease,
+//     z-index 0.25s ease,
+//     margin 0.25s ease;
+//   transform-origin: bottom center;
+//   cursor: grab;
+// }
 
 .show-all {
   background-color: #10101061;
@@ -72,74 +100,130 @@ ul#list {
   background: none;
 }
 
-ul#list > * {
+ul#list > * > * {
   flex: 0 0 auto;
   margin: 0 -30px; /* overlap cards */
-  transition:
-    transform 0.25s ease,
-    z-index 0.25s ease,
-    margin 0.25s ease;
-  transform-origin: bottom center;
+  // transition:
+  //   transform 0.25s ease,
+  //   z-index 0.25s ease,
+  //   margin 0.25s ease;
+  // transform-origin: bottom center;
   cursor: grab;
 }
 
 ul#list > *:nth-child(odd) {
+  --rott: -3deg;
   transform: rotate(-3deg) translateY(34px);
+  // animation-delay: 0.1s;
 }
 ul#list > *:nth-child(even) {
+  --rott: 3deg;
+  // animation-delay: 0.2s;
+
   transform: rotate(3deg) translateY(34px);
 }
 ul#list > *:nth-child(3n) {
+  --rott: 1deg;
+  // animation-delay: 0.3s;
+
   transform: rotate(1deg) translateY(32px);
 }
 
-@keyframes dealOdd {
+// ul#list.deck > * {
+//   animation: cardsDecked 1.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+// }
+
+// @keyframes cardsDecked {
+//   100% {
+//     transform: translate(0, 34px) scale(1) rotate(var(--rott));
+//   }
+
+//   50% {
+//     transform: translate(20%, 34px) scale(1) rotate(var(--rott));
+//   }
+//   0% {
+//     transform: translate(100%, 34px) scale(1) rotate(var(--rott));
+//     position: fixed;
+//     left: 0;
+//     bottom: 0;
+//   }
+// }
+
+ul#list.deck > * {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  // transform: translate(0, 0) rotate(var(--rot));
+  // animation: cardIn 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes cardsDecked {
   0% {
-    opacity: 0;
-    transform: translateY(-120px) translateX(60px) rotate(15deg) scale(0.7);
+    transform: translate(0, 0) rotate(0deg);
   }
-  70% {
-    transform: translateY(28px) rotate(-4deg) scale(1.04);
+  50% {
+    position: relative;
+    transform: translate(6px, -20px) rotate(calc(var(--rot) * 0.5));
+  }
+  80% {
+    position: relative;
+    transform: translate(6px, 20px) rotate(calc(var(--rot) * 0.5));
   }
   100% {
-    opacity: 1;
-    transform: rotate(-3deg) translateY(34px);
+    position: relative;
+
+    transform: translate(6px, 0px) rotate(var(--rot));
   }
 }
 
-@keyframes dealEven {
-  0% {
-    opacity: 0;
-    transform: translateY(-120px) translateX(60px) rotate(15deg) scale(0.7);
-  }
-  70% {
-    transform: translateY(28px) rotate(4deg) scale(1.04);
-  }
-  100% {
-    opacity: 1;
-    transform: rotate(3deg) translateY(34px);
-  }
-}
+// @keyframes dealOdd {
+//   0% {
+//     opacity: 0;
+//     transform: translateY(-120px) translateX(60px) rotate(15deg) scale(0.7);
+//   }
+//   70% {
+//     transform: translateY(28px) rotate(-4deg) scale(1.04);
+//   }
+//   100% {
+//     opacity: 1;
+//     transform: rotate(-3deg) translateY(34px);
+//   }
+// }
 
-@keyframes deal3n {
-  0% {
-    opacity: 0;
-    transform: translateY(-120px) translateX(60px) rotate(15deg) scale(0.7);
-  }
-  70% {
-    transform: translateY(26px) rotate(2deg) scale(1.04);
-  }
-  100% {
-    opacity: 1;
-    transform: rotate(1deg) translateY(32px);
-  }
-}
+// @keyframes dealEven {
+//   0% {
+//     opacity: 0;
+//     transform: translateY(-120px) translateX(60px) rotate(15deg) scale(0.7);
+//   }
+//   70% {
+//     transform: translateY(28px) rotate(4deg) scale(1.04);
+//   }
+//   100% {
+//     opacity: 1;
+//     transform: rotate(3deg) translateY(34px);
+//   }
+// }
 
-ul#list > *:hover {
+// @keyframes deal3n {
+//   0% {
+//     opacity: 0;
+//     transform: translateY(-120px) translateX(60px) rotate(15deg) scale(0.7);
+//   }
+//   70% {
+//     transform: translateY(26px) rotate(2deg) scale(1.04);
+//   }
+//   100% {
+//     opacity: 1;
+//     transform: rotate(1deg) translateY(32px);
+//   }
+// }
+
+ul#list > * > *:hover {
   transform: translateY(-25px) scale(1.08) !important;
   margin: 0 5px;
   z-index: 999 !important;
-  box-shadow: -5px 10px 5px rgba(0, 0, 0, 0.155);
+  box-shadow: -5px 10px 5px rgba(0, 0, 0, 0.155) !important;
+  border-radius: 26px;
 }
 
 /* This is the container of the Categories */
@@ -238,6 +322,7 @@ ul#list > *:hover {
 
 /* Card */
 
+ul#list > .cards > .card,
 li.card {
   background-color: rgb(253, 253, 253);
   border: solid 1px #5d5d5d;
@@ -252,10 +337,12 @@ li.card {
   justify-content: space-evenly;
   height: 100%;
   max-height: 15.5rem;
+  min-height: 15rem;
   padding: var.$spacing-sm;
   text-align: center;
-  width: 100%;
+  width: 10rem;
   max-width: 10rem;
+  // animation: cardsDecked 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 
   h4 {
     font-size: 1.2rem;
@@ -280,6 +367,7 @@ li.card {
     max-width: 13.87rem;
     flex-direction: row;
     height: auto;
+    min-height: min-content;
     width: 100%;
     padding-left: 5px;
     box-shadow: #1d1d1d35 1px 1px 3px;
@@ -698,6 +786,7 @@ li.card {
 @keyframes dealFromDeck {
   0% {
     opacity: 0;
+
     transform: translateY(360px) translateX(20px) rotate(8deg) scale(0.85);
   }
   60% {
@@ -710,7 +799,168 @@ li.card {
   }
 }
 
+@keyframes dealToDeck {
+  100% {
+    opacity: 1;
+    transform: translateY(1px) translateX(12px) rotate(3deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(6px) translateX(-12px) rotate(-3deg);
+  }
+  0% {
+    opacity: 1;
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+}
+
 .card-item {
   opacity: 0;
   animation: dealFromDeck 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+// .closing {
+//   animation: dealToDeck 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+// }
+
+.closing {
+  animation: cardOut 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.opening {
+  animation: cardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes cardOut {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  50% {
+    // opacity: 0;
+    transform: translate(var(--x), 100%) scale(0.9) rotate(var(--rot));
+  }
+
+  100% {
+    // opacity: 0;
+    transform: translate(0, 54px) scale(1) rotate(var(--rot));
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+  }
+}
+
+@keyframes cardIn {
+  0% {
+    // opacity: 0;
+    // transform: translate(10px, 54px) scale(1) rotate(var(--rot));
+    // position: fixed;
+    margin: 0 -28px;
+    transform: translate(0, 34px) rotate(var(--rot));
+
+    // left: 50%;
+    // bottom: 0;
+  }
+
+  60% {
+    // opacity: 0;
+    // transform: translate(0, 80%) scale(0.9) rotate(var(--rot));
+    margin: 0 -10px;
+    transform: translate(0, 20px) rotate(calc(var(--rot) * 0.5));
+
+    // left: 50%;
+    // bottom: 0;
+  }
+  100% {
+    // opacity: 1;
+    margin: 0 18px;
+    transform: translate(0, 34px) rotate(var(--rot));
+
+    // left: 50%;
+    // bottom: 0;
+    // transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+}
+
+.closing:nth-child(10n + 1),
+.opening:nth-child(10n + 1),
+ul#list:nth-child(10n + 1) {
+  --x: 0%;
+  --y: 100%;
+  --rot: -5deg;
+}
+.closing:nth-child(10n + 2),
+.opening:nth-child(10n + 2),
+ul#list:nth-child(10n + 2) {
+  --x: 10%;
+  --y: 100%;
+
+  --rot: 12deg;
+}
+.closing:nth-child(10n + 3),
+.opening:nth-child(10n + 3),
+ul#list:nth-child(10n + 3) {
+  --x: 20%;
+  --y: 70px;
+
+  --rot: -3deg;
+}
+
+.closing:nth-child(10n + 4),
+.opening:nth-child(10n + 4),
+ul#list:nth-child(10n + 4) {
+  --x: 15%;
+  --y: 90px;
+
+  --rot: 5deg;
+}
+
+.closing:nth-child(10n + 5),
+// .openinging:nth-child(10n + 5),
+ul#list:nth-child(10n + 5) {
+  --x: 20%;
+  --y: 75px;
+
+  --rot: -13deg;
+}
+.closing:nth-child(10n + 6),
+// .openinging:nth-child(10n + 6),
+ul#list:nth-child(10n + 6) {
+  --x: 30%;
+  --y: 75px;
+
+  --rot: -8deg;
+}
+.closing:nth-child(10n + 7),
+.opening:nth-child(10n + 7),
+ul#list:nth-child(10n + 7) {
+  --x: 40%;
+  --y: 90px;
+
+  --rot: 8deg;
+}
+.closing:nth-child(10n + 8),
+.opening:nth-child(10n + 8),
+ul#list:nth-child(10n + 8) {
+  --x: 50%;
+  --y: 105px;
+
+  --rot: -8deg;
+}
+.closing:nth-child(10n + 9),
+.opening:nth-child(10n + 9),
+ul#list:nth-child(10n + 9) {
+  --x: -15%;
+  --y: 105px;
+
+  --rot: -10deg;
+}
+
+.closing:nth-child(10n),
+.opening:nth-child(10n),
+ul#list:nth-child(10n) {
+  --x: -5%;
+  --y: 85px;
+
+  --rot: 10deg;
 }

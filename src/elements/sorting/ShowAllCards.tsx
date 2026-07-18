@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as uiAction from "actions/sorting/uiAction";
 import List from "./List";
@@ -9,24 +9,36 @@ import CardContent from "./CardContent";
 const ShowAllCards = () => {
   const dispatch = useDispatch();
 
+  const [close, setClose] = React.useState(false);
+
   const onStartClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    dispatch(uiAction.showAllCards(false));
-    dispatch(uiAction.startSort());
+    setClose(!close);
+
+    const animationDelay = (totalCards - 1) * 80;
+    const animationDuration = 300;
+    setTimeout(() => {
+      dispatch(uiAction.showAllCards(false));
+      dispatch(uiAction.startSort());
+    }, animationDelay + animationDuration);
   };
 
   const unsortedCards = useSelector(
     (state: StateSchema) => state.sortingBoard.unsortedCards,
   );
 
+  const totalCards = unsortedCards.length;
+
   return (
     <div className="show-all">
-      <ul className="all-list">
+      <ul className={close ? "all-list closed " : "all-list"}>
         {unsortedCards.map((card, index) => (
           <div
             key={card.id}
-            className="card-item fade-in"
-            style={{ animationDelay: `${index * 80}ms` }}
+            className={close ? " closing" : "card-item"}
+            style={{
+              animationDelay: `${(close ? totalCards - index : index) * 60}ms`,
+            }}
           >
             <CardContent
               key={card.id}

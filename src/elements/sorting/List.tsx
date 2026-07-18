@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CardItem from "./CardItem";
 import { DropTargetMonitor, useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,9 +17,7 @@ const List: React.FC = () => {
     (state: StateSchema) => state.sortingUi?.sortType ?? "open",
   );
 
-  const showAll = useSelector(
-    (state: StateSchema) => state.sortingUi?.showAllCards,
-  );
+  const [deckedUp, setDeckedUp] = useState(true);
 
   // Dispatch
   const dispatch = useDispatch();
@@ -46,18 +44,35 @@ const List: React.FC = () => {
     }),
   });
 
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    const expandTimer = setTimeout(() => setDeckedUp(false), 1500);
+    return () => clearTimeout(expandTimer);
+  }, []);
+
+  const allCards = unsortedCards.length;
+
   return (
     //@ts-ignore
-    <ul id="list" ref={drop}>
-      {unsortedCards.map((card) => (
-        <CardItem
+    <ul id="list" ref={drop} className={deckedUp ? "deck" : ""}>
+      {unsortedCards.map((card, index) => (
+        <div
           key={card.id}
-          id={card.id}
-          title={card.name}
-          description={card.description}
-          position={-1}
-          minimized={false}
-        />
+          className="cards opening"
+          style={{
+            animationDelay: `${index * 30}ms`,
+          }}
+        >
+          <CardItem
+            key={card.id}
+            id={card.id}
+            title={card.name}
+            description={card.description}
+            position={-1}
+            minimized={false}
+          />
+        </div>
       ))}
     </ul>
   );

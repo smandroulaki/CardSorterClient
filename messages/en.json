@@ -35,6 +35,7 @@
     "log out": "Log out"
   },
   "SortingHeader": {
+    "show all": "Show all cards",
     "show description": "Show Description",
     "add comment": "Add a comment",
     "finish": "Finish",
