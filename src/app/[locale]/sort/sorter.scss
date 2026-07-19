@@ -29,7 +29,7 @@
   max-width: 100dvw;
   // flex-wrap: wrap;
   padding: 5rem;
-  padding-bottom: 0;
+  padding-bottom: 5rem;
   // overflow-y: auto;
 
   li.card {
@@ -70,21 +70,30 @@
   width: 100%;
   z-index: 10;
   overflow-y: auto;
+  transition: background-color 1.5s ease-in 1.5s;
+
+  &.closed {
+    background-color: #ffffff00;
+  }
 }
 
 .start-btn {
   display: flex;
-  position: relative;
+  position: fixed;
   justify-content: end;
   justify-items: flex-end;
-  margin-right: 5rem;
+  bottom: 0;
+  right: 5rem;
+  // margin-right: 5rem;
   margin-bottom: 5rem;
+  transition: all 1.5s ease-in 1.5s;
 }
 
 ul#list {
   display: flex;
   // flex-wrap: wrap;
-  justify-content: safe center;
+  // justify-content: safe center;
+  justify-content: flex-start;
   position: fixed;
   bottom: 0;
   align-items: flex-end;
@@ -100,15 +109,25 @@ ul#list {
   background: none;
 }
 
+// ul#list > * {
+//   // animation: cardOut 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+//   // animation-delay: 2000s;
+// }
+
 ul#list > * > * {
   flex: 0 0 auto;
   margin: 0 -30px; /* overlap cards */
+  transition: all 0.2s ease-out !important;
+
+  // margin: 0 -30px; /* overlap cards */
   // transition:
   //   transform 0.25s ease,
   //   z-index 0.25s ease,
   //   margin 0.25s ease;
   // transform-origin: bottom center;
+
   cursor: grab;
+  transition: margin 0.02s ease-in;
 }
 
 ul#list > *:nth-child(odd) {
@@ -219,11 +238,13 @@ ul#list.deck > * {
 // }
 
 ul#list > * > *:hover {
-  transform: translateY(-25px) scale(1.08) !important;
-  margin: 0 5px;
+  transform: translateX(-15px) translateY(-34px) scale(1.08)
+    rotate(calc(-1 * var(--rott))) !important;
+  margin: 0 -12px;
   z-index: 999 !important;
   box-shadow: -5px 10px 5px rgba(0, 0, 0, 0.155) !important;
   border-radius: 26px;
+  transition: transform 0.2s ease-in;
 }
 
 /* This is the container of the Categories */
@@ -343,7 +364,7 @@ li.card {
   width: 10rem;
   max-width: 10rem;
   // animation: cardsDecked 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-
+  // transition: all 2s ease-in;
   h4 {
     font-size: 1.2rem;
     font-weight: 800;
@@ -845,7 +866,7 @@ li.card {
     // opacity: 0;
     transform: translate(0, 54px) scale(1) rotate(var(--rot));
     position: fixed;
-    left: 50%;
+    left: 50dvw;
     bottom: 0;
   }
 }
@@ -873,8 +894,8 @@ li.card {
   }
   100% {
     // opacity: 1;
-    margin: 0 18px;
-    transform: translate(0, 34px) rotate(var(--rot));
+    margin: 0 -6px;
+    transform: translate(0, 34px) rotate(var(--rott));
 
     // left: 50%;
     // bottom: 0;
@@ -886,14 +907,14 @@ li.card {
 .opening:nth-child(10n + 1),
 ul#list:nth-child(10n + 1) {
   --x: 0%;
-  --y: 100%;
+  --y: 60px;
   --rot: -5deg;
 }
 .closing:nth-child(10n + 2),
 .opening:nth-child(10n + 2),
 ul#list:nth-child(10n + 2) {
   --x: 10%;
-  --y: 100%;
+  --y: 80px;
 
   --rot: 12deg;
 }

@@ -17,8 +17,6 @@ const List: React.FC = () => {
     (state: StateSchema) => state.sortingUi?.sortType ?? "open",
   );
 
-  const [deckedUp, setDeckedUp] = useState(true);
-
   // Dispatch
   const dispatch = useDispatch();
 
@@ -44,36 +42,83 @@ const List: React.FC = () => {
     }),
   });
 
-  const timerRef = useRef(null);
+  const [phase, setPhase] = useState("stacked");
 
   useEffect(() => {
-    const expandTimer = setTimeout(() => setDeckedUp(false), 1500);
-    return () => clearTimeout(expandTimer);
+    setPhase("stacked");
+
+    const t = setTimeout(() => {
+      setPhase("spreading");
+    }, 300);
+    return () => clearTimeout(t);
   }, []);
 
-  const allCards = unsortedCards.length;
+  const STACK_POSITIONS = [
+    { x: "0%", y: "60px", rot: "-5deg" }, // 1
+    { x: "10%", y: "80px", rot: "12deg" }, // 2
+    { x: "20%", y: "70px", rot: "-3deg" }, // 3
+    { x: "15%", y: "90px", rot: "5deg" }, // 4
+    { x: "20%", y: "75px", rot: "-13deg" }, // 5
+    { x: "30%", y: "75px", rot: "-8deg" }, // 6
+    { x: "40%", y: "90px", rot: "8deg" }, // 7
+    { x: "50%", y: "95px", rot: "-8deg" }, // 8
+    { x: "-15%", y: "65px", rot: "-10deg" }, // 9
+    { x: "-5%", y: "75px", rot: "10deg" }, // 10
+  ];
+
+  function getSpreadTransform(index: number) {
+    const n = index + 1; // 1-indexed
+    if (n % 3 === 0) return { rot: "1deg", ty: "32px" };
+    if (n % 2 === 0) return { rot: "3deg", ty: "34px" };
+    return { rot: "-3deg", ty: "34px" };
+  }
+
+  const isSpread = phase === "spreading";
 
   return (
     //@ts-ignore
-    <ul id="list" ref={drop} className={deckedUp ? "deck" : ""}>
-      {unsortedCards.map((card, index) => (
-        <div
-          key={card.id}
-          className="cards opening"
-          style={{
-            animationDelay: `${index * 30}ms`,
-          }}
-        >
-          <CardItem
+
+    <ul id="list" ref={drop}>
+      {unsortedCards.map((card, index) => {
+        const stackPos = STACK_POSITIONS[index % 10];
+        const spread = getSpreadTransform(index);
+
+        const stackTransform = `translateX(0) translateY(54px) rotate(${stackPos.rot})`;
+
+        const cardWidth = 165;
+        const overlapPx = -30;
+        const step = cardWidth + overlapPx;
+
+        const spreadOffsetX = index * step;
+
+        const spreadTransform = `translateX(${spreadOffsetX}px) translateY(${spread.ty}) rotate(${spread.rot})`;
+        return (
+          <div
+            className="cards"
             key={card.id}
-            id={card.id}
-            title={card.name}
-            description={card.description}
-            position={-1}
-            minimized={false}
-          />
-        </div>
-      ))}
+            style={{
+              position: "absolute",
+
+              bottom: 0,
+              left: isSpread ? "0" : "50%",
+              zIndex: 9999 + index,
+              transform: isSpread ? spreadTransform : stackTransform,
+              transition: isSpread
+                ? `transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) ${index * 25}ms,left 0.25s linear `
+                : "none",
+            }}
+          >
+            <CardItem
+              key={card.id}
+              id={card.id}
+              title={card.name}
+              description={card.description}
+              position={-1}
+              minimized={false}
+            />
+          </div>
+        );
+      })}
     </ul>
   );
 };

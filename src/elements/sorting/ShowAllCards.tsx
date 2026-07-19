@@ -15,7 +15,7 @@ const ShowAllCards = () => {
     e.stopPropagation();
     setClose(!close);
 
-    const animationDelay = (totalCards - 1) * 80;
+    const animationDelay = (totalCards - 1) * 45;
     const animationDuration = 300;
     setTimeout(() => {
       dispatch(uiAction.showAllCards(false));
@@ -30,14 +30,14 @@ const ShowAllCards = () => {
   const totalCards = unsortedCards.length;
 
   return (
-    <div className="show-all">
+    <div className={close ? "show-all closed" : "show-all"}>
       <ul className={close ? "all-list closed " : "all-list"}>
         {unsortedCards.map((card, index) => (
           <div
             key={card.id}
             className={close ? " closing" : "card-item"}
             style={{
-              animationDelay: `${(close ? totalCards - index : index) * 60}ms`,
+              animationDelay: `${(close ? totalCards - index : index) * 45}ms`,
             }}
           >
             <CardContent
