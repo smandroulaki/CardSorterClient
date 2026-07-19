@@ -24,6 +24,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 16px;
+
   // display: flex;
   // flex-direction: row;
   max-width: 100dvw;
@@ -93,6 +94,9 @@ ul#list {
   display: flex;
   // flex-wrap: wrap;
   // justify-content: safe center;
+  background-color: #f0f0f000;
+  perspective: 1000px;
+
   justify-content: flex-start;
   position: fixed;
   bottom: 0;
@@ -101,23 +105,24 @@ ul#list {
   margin: 0;
   padding: 10px 20px;
   height: 100%;
-  max-height: 19rem;
+  max-height: 17rem;
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   padding: var.$spacing-md;
-  background: none;
+  // background: none;
 }
 
-// ul#list > * {
+// ul#list > * > * {
 //   // animation: cardOut 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
 //   // animation-delay: 2000s;
 // }
 
 ul#list > * > * {
   flex: 0 0 auto;
-  margin: 0 -30px; /* overlap cards */
-  transition: all 0.2s ease-out !important;
+  margin: 0 -12px; /* overlap cards */
+  transition: margin 0.2s ease-out !important;
+  // box-shadow: -7px -2px 15px #00000014 !important;
 
   // margin: 0 -30px; /* overlap cards */
   // transition:
@@ -127,7 +132,7 @@ ul#list > * > * {
   // transform-origin: bottom center;
 
   cursor: grab;
-  transition: margin 0.02s ease-in;
+  // transition: margin 0.02s ease-in;
 }
 
 ul#list > *:nth-child(odd) {
@@ -238,19 +243,45 @@ ul#list.deck > * {
 // }
 
 ul#list > * > *:hover {
-  transform: translateX(-15px) translateY(-34px) scale(1.08)
+  transform: translateX(-5px) translateY(-59px) scale(1.08)
     rotate(calc(-1 * var(--rott))) !important;
-  margin: 0 -12px;
-  z-index: 999 !important;
-  box-shadow: -5px 10px 5px rgba(0, 0, 0, 0.155) !important;
+  margin: 0 -40px;
+  z-index: 999999 !important;
+  // box-shadow: -6px 14px 5px rgba(0, 0, 0, 0.155) !important;
+  box-shadow:
+    0 0 0 1px #00000008,
+    0 2px 4px #0000000d,
+    -6px 14px 4px #00000024 !important;
   border-radius: 26px;
   transition: transform 0.2s ease-in;
 }
+
+ul#list > :nth-child(1) > :hover {
+  margin-left: 40px;
+  mix-blend-mode: normal;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 16px 32px rgba(0, 0, 0, 0.1);
+}
+
+// ul#list > * > :nth-child(1),
+// .all-list > :last-child {
+//   // margin-left: 40px;
+//   // background-color: red;
+//   border-radius: 26px;
+//   mix-blend-mode: normal;
+//   box-shadow:
+//     0 0 0 1px rgba(0, 0, 0, 0.05),
+//     0 4px 12px rgba(0, 0, 0, 0.1),
+//     0 16px 32px rgba(0, 0, 0, 0.1);
+// }
 
 /* This is the container of the Categories */
 #board {
   // position: relative;
   // width: 100%;
+  background-color: #f0f0f0a8;
   align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
@@ -259,7 +290,7 @@ ul#list > * > *:hover {
   max-height: calc(100dvh + 18rem);
   padding: var.$spacing-md;
   padding-right: 0 !important;
-  margin-bottom: 19rem !important;
+  padding-bottom: 19rem !important;
   overflow-y: auto;
 }
 
@@ -346,10 +377,23 @@ ul#list > * > *:hover {
 ul#list > .cards > .card,
 li.card {
   background-color: rgb(253, 253, 253);
-  border: solid 1px #5d5d5d;
+  // border: solid 1px #5d5d5d;
+  // border: inset 1px #5d5d5d;
+  // border-style: inset;
   border-radius: 26px;
-  box-shadow: var.$shadow-sm;
+  // box-shadow: var.$shadow-sm;
   box-sizing: border-box;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    0 8px 20px rgba(0, 0, 0, 0.07);
+
+  background-image: linear-gradient(
+    rgba(255, 255, 255, 0.725),
+    rgba(255, 255, 255, 0.281)
+  );
+
+  // mix-blend-mode: multiply;
   // filter: drop-shadow(8px 10px 4px #00000012);
   cursor: move;
   display: flex;
@@ -363,6 +407,10 @@ li.card {
   text-align: center;
   width: 10rem;
   max-width: 10rem;
+
+  transition:
+    box-shadow 220ms ease,
+    transform 220ms ease;
   // animation: cardsDecked 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
   // transition: all 2s ease-in;
   h4 {
@@ -378,20 +426,24 @@ li.card {
     margin: 0;
     max-width: 10rem;
     text-wrap: wrap;
+    overflow-wrap: break-word;
+  }
+  &.dragging {
+    opacity: 0;
   }
 
   &.minimized {
     border-radius: 20px;
     box-shadow: none;
     display: flex;
-    border: solid 1px #999999;
+    // border: solid 1px #999999;
     max-width: 13.87rem;
     flex-direction: row;
     height: auto;
     min-height: min-content;
     width: 100%;
     padding-left: 5px;
-    box-shadow: #1d1d1d35 1px 1px 3px;
+    box-shadow: 0 0px 2px 1px #00000029;
     position: relative;
     text-align: start;
     justify-content: flex-start;
@@ -419,7 +471,8 @@ li.card {
   font-weight: bold;
   text-align: center;
   color: rgb(128, 128, 128);
-  border-top: 1px solid #ddd;
+  // border-top: 1px solid #ddd;
+  box-shadow: 0px -1px 3px #0000001a;
   width: 14rem;
   border-bottom-left-radius: 25px;
   border-bottom-right-radius: 25px;
@@ -428,8 +481,9 @@ li.card {
 
 /* Category */
 .category {
+  background-color: white;
   align-items: center;
-  border: solid 1px #1d1d1d;
+  // border: solid 1px #1d1d1d;
   border-radius: 25px;
   box-shadow: 0 2px 4px rgb(0, 0, 0, 16%);
   display: flex;
@@ -476,7 +530,7 @@ li.card {
       max-width: 90%;
       margin: 0;
       overflow: hidden;
-      text-decoration: underline;
+      // text-decoration: underline;
       text-overflow: ellipsis;
       vertical-align: middle;
       white-space: nowrap;
@@ -550,6 +604,7 @@ li.card {
   &.drop-to-create {
     align-items: center;
     background: 0;
+    border: 1px;
     border-style: dashed;
     border-radius: 30px;
     box-shadow: none;
@@ -846,6 +901,27 @@ li.card {
 
 .closing {
   animation: cardOut 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.closing > .card,
+.cards.stacked > .card {
+  box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.104) !important;
+
+  border-radius: 26px;
+}
+
+.closing:last-child > .card,
+.cards.stacked:last-child > .card {
+  // border-radius: 26px;
+  box-shadow:
+    rgba(12, 0, 0, 0.099) 0px 0px 4px 1px,
+    rgba(12, 0, 0, 0.503) 0px 2px 4px,
+    rgba(0, 0, 0, 0.07) 0px 8px 20px !important;
+
+  // box-shadow:
+  //   0 0 0 1px rgb(0 0 0 / 0.06),
+  //   0 3px 8px rgb(0 0 0 / 0.1),
+  //   0 14px 28px rgb(0 0 0 / 0.14);
 }
 
 .opening {
