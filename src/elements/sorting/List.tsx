@@ -43,6 +43,7 @@ const List: React.FC = () => {
   });
 
   const [phase, setPhase] = useState("stacked");
+  const [spread, setSpread] = useState(false);
 
   useEffect(() => {
     setPhase("stacked");
@@ -50,8 +51,16 @@ const List: React.FC = () => {
     const t = setTimeout(() => {
       setPhase("spreading");
     }, 300);
-    return () => clearTimeout(t);
+
+    const t2 = setTimeout(() => {
+      setSpread(true);
+    }, 1000);
+    return () => {
+      clearTimeout(t);
+      clearTimeout(t2);
+    };
   }, []);
+  // setPhase("spread");
 
   const STACK_POSITIONS = [
     { x: "0%", y: "60px", rot: "-5deg" }, // 1
@@ -73,12 +82,39 @@ const List: React.FC = () => {
     return { rot: "-3deg", ty: "34px" };
   }
 
-  const isSpread = phase === "spreading";
+  const isSpreading = phase === "spreading";
+  console.log("isSpreading:", isSpreading);
+  const isStacked = phase === "stacked";
+  console.log("isStacked", isStacked);
+  const isSpread = spread;
+  console.log("isSpread:", isSpread);
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
+
+  // function scrollContainer(amount: any) {
+  //   const container = document.getElementById("list");
+  //   container?.scrollBy({
+  //     left: amount,
+  //     behavior: "smooth",
+  //   });
+  //   console.log("clicked", container);
+  // }
 
   return (
-    //@ts-ignore
-
+    //  @ts-ignore
     <ul id="list" ref={drop}>
+      {/* <button
+        id="scroll-left"
+        onClick={() => scrollContainer(-300)}
+        style={{
+          position: "fixed",
+          left: "2rem",
+          bottom: "10rem",
+          color: "red",
+          zIndex: 99999999999,
+        }}
+      >
+        ◀
+      </button> */}
       {unsortedCards.map((card, index) => {
         const stackPos = STACK_POSITIONS[index % 10];
         const spread = getSpreadTransform(index);
@@ -90,20 +126,29 @@ const List: React.FC = () => {
         const step = cardWidth + overlapPx;
 
         const spreadOffsetX = index * step;
+        // const screenWidth = window.innerWidth;
+        // const totalWidth = (unsortedCards.length - 1) * step;
+
+        // const spreadOffsetX = index * step - totalWidth / 2;
 
         const spreadTransform = `translateX(${spreadOffsetX}px) translateY(${spread.ty}) rotate(${spread.rot})`;
         return (
           <div
-            className="cards"
+            className={
+              (isSpreading || isStacked) && !isSpread
+                ? "cards stacked "
+                : "cards "
+            }
             key={card.id}
+            onMouseEnter={() => setHoveredId(card.id)}
+            onMouseLeave={() => setHoveredId(null)}
             style={{
               position: "absolute",
-
               bottom: 0,
-              left: isSpread ? "0" : "50%",
-              zIndex: 9999 + index,
-              transform: isSpread ? spreadTransform : stackTransform,
-              transition: isSpread
+              left: isStacked ? "50%" : "0",
+              zIndex: hoveredId === card.id ? 9999999 : 9999 + index,
+              transform: isSpreading ? spreadTransform : stackTransform,
+              transition: isSpreading
                 ? `transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) ${index * 25}ms,left 0.25s linear `
                 : "none",
             }}
@@ -119,6 +164,19 @@ const List: React.FC = () => {
           </div>
         );
       })}
+      {/* <button
+        id="scroll-right"
+        onClick={() => scrollContainer(+300)}
+        style={{
+          position: "fixed",
+          bottom: "10rem",
+          right: "2rem",
+          color: "red",
+          zIndex: 99999999999,
+        }}
+      >
+        ▶
+      </button> */}
     </ul>
   );
 };

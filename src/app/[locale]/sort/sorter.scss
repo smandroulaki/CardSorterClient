@@ -287,11 +287,11 @@ ul#list > :nth-child(1) > :hover {
   flex-wrap: wrap;
   gap: var.$gap-grid;
   height: 100%;
-  max-height: calc(100dvh + 18rem);
+  // max-height: calc(100dvh + 18rem);
   padding: var.$spacing-md;
   padding-right: 0 !important;
   padding-bottom: 19rem !important;
-  overflow-y: auto;
+  // overflow-y: auto;
 }
 
 // clap animation
