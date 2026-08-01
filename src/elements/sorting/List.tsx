@@ -83,11 +83,8 @@ const List: React.FC = () => {
   }
 
   const isSpreading = phase === "spreading";
-  console.log("isSpreading:", isSpreading);
   const isStacked = phase === "stacked";
-  console.log("isStacked", isStacked);
   const isSpread = spread;
-  console.log("isSpread:", isSpread);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   // function scrollContainer(amount: any) {

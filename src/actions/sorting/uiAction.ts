@@ -9,6 +9,7 @@ export interface CategoryRequest {
   cards: number[];
   id: number;
   title: string;
+  color: string;
 }
 
 export const toggleOnBoarding = createAction<boolean>("ui/toggleOnBoarding");

@@ -467,6 +467,8 @@ li.card {
 
 /* Counting the number of cards in each category */
 .card-count-footer {
+  display: flex;
+  justify-content: space-between;
   padding: 0.5rem;
   font-weight: bold;
   text-align: center;

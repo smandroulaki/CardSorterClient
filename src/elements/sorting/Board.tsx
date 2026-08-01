@@ -137,6 +137,7 @@ const Board = () => {
             key={"k" + category.id}
             id={category.id}
             title={category.title}
+            color={category.color}
             cards={category.cards}
             predefined={category.predefined}
             onSortAnimation={() => {
