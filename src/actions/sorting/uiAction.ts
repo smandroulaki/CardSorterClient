@@ -13,6 +13,18 @@ export interface CategoryRequest {
 }
 
 export const toggleOnBoarding = createAction<boolean>("ui/toggleOnBoarding");
+export const toggleOnBoardingPartOne = createAction<boolean>(
+  "ui/toggleOnBoardingPartOne",
+);
+
+export const toggleOnBoardingPartTwo = createAction<boolean>(
+  "ui/toggleOnBoardingPartTwo",
+);
+
+export const toggleBoardingFinalStep = createAction<boolean>(
+  "ui/toggleBoardingFinalStep",
+);
+
 export const showAllCards = createAction<boolean>("ui/showAllCards");
 
 export const saveStudyID = createAction<{ studyID: string }>("ui/saveStudyID");

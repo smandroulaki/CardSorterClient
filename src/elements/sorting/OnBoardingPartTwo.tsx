@@ -1,0 +1,85 @@
+import React from "react";
+import { useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
+import Button from "@mui/material/Button";
+
+import * as uiAction from "actions/sorting/uiAction";
+
+const OnBoardingPartTwo = () => {
+  // Dispatch
+  const dispatch = useDispatch();
+
+  const onClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch(uiAction.toggleOnBoarding(false));
+    dispatch(uiAction.toggleOnBoardingPartOne(false));
+
+    dispatch(uiAction.toggleOnBoardingPartTwo(false));
+
+    // dispatch(uiAction.showAllCards(true));
+  };
+
+  const [nextStep, setNextStep] = useState(3);
+
+  return (
+    <div className="on-boarding-screen">
+      <div
+        className={
+          nextStep === 3 ? "board-explainer " : "board-explainer hidden"
+        }
+      >
+        <span>
+          <span className="step">
+            {/* <span className="step-number">2</span> */}
+            <h3>Step 2</h3>
+          </span>
+          <div className="step-explainer">
+            <p>
+              Drag a <b>card</b> into this area to create your{" "}
+              <b>first group</b>.
+            </p>
+          </div>
+          <div className="ok-btn">
+            <Button
+              onClick={() => {
+                setNextStep(4);
+                dispatch(uiAction.toggleBoardingFinalStep(true));
+              }}
+            >
+              Ok i'm ready
+            </Button>
+          </div>
+        </span>
+      </div>
+      <div
+        className={
+          nextStep === 4 ? "finish-explainer" : "finish-explainer hidden"
+        }
+      >
+        <span>
+          <span className="step">
+            {/* <span className="step-number">3</span> */}
+            <h3>Step 3</h3>
+          </span>
+          <div className="step-explainer">
+            <p>
+              When you feel like you are done, press the <b>finish</b> button.
+            </p>
+          </div>
+          <div className="ok-btn">
+            <Button
+              onClick={(e) => {
+                setNextStep(0);
+                onClick(e);
+              }}
+            >
+              Ok i'm ready
+            </Button>
+          </div>
+        </span>
+      </div>
+    </div>
+  );
+};
+
+export default OnBoardingPartTwo;

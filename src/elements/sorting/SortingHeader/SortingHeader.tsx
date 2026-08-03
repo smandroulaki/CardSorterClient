@@ -82,8 +82,19 @@ const SortingHeader = () => {
 
   const onShowAllClick = () => dispatch(uiAction.showAllCards(true));
 
+  const onBoardingFinalStep = useSelector(
+    (state: StateSchema) => state.sortingUi.onBoardingFinalStep,
+  );
+
+  const onBoarding = useSelector(
+    (state: StateSchema) => state.sortingUi.showOnBoarding,
+  );
+
   return (
-    <header className={styles.sortingHeader}>
+    <header
+      className={styles.sortingHeader}
+      style={onBoarding ? { pointerEvents: "none" } : {}}
+    >
       <h1 className={styles.logo}>Card Sorter</h1>
       <div className={styles.btnContainer}>
         <ProgressCount />
@@ -105,7 +116,19 @@ const SortingHeader = () => {
         <Button variant="outlined" onClick={onCommentClick}>
           {t("add comment")}
         </Button>
-        <Button variant="contained" onClick={onFinishClick}>
+        <Button
+          variant="contained"
+          onClick={onFinishClick}
+          style={
+            onBoardingFinalStep
+              ? {
+                  zIndex: 1000,
+                  boxShadow:
+                    "10px 8px 0 white, -10px 8px 0 white, 10px -8px 0 white, -10px -8px 0 white",
+                }
+              : {}
+          }
+        >
           {t("finish")}
         </Button>
       </div>

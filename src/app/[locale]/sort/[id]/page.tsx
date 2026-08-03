@@ -21,6 +21,7 @@ import { useTranslations } from "next-intl";
 import LoadSortData from "elements/sorting/LoadSortData";
 import { useParams } from "next/navigation";
 import ShowAllCards from "elements/sorting/ShowAllCards";
+import OnBoardingPartTwo from "elements/sorting/OnBoardingPartTwo";
 
 export default function page() {
   const { id } = useParams<{ id: string }>();
@@ -29,6 +30,14 @@ export default function page() {
   // State
   const showOnboarding = useSelector(
     (state: StateSchema) => state.sortingUi.showOnBoarding,
+    // (state: StateSchema) => true,
+  );
+  const showOnboardingPartOne = useSelector(
+    (state: StateSchema) => state.sortingUi.showOnBoardingPartOne,
+  );
+  const showOnboardingPartTwo = useSelector(
+    (state: StateSchema) => state.sortingUi.showOnBoardingPartTwo,
+    // (state: StateSchema) => true,
   );
   const showAllCards = useSelector(
     (state: StateSchema) => state.sortingUi.showAllCards,
@@ -74,8 +83,12 @@ export default function page() {
             maxSize={-300}
             defaultSize={'18rem'}
           > */}
-          {!showOnboarding && !showAllCards && <Board />}
-          {!showOnboarding && !showAllCards && <List />}
+          {(!showOnboarding || showOnboardingPartTwo) && !showAllCards && (
+            <Board />
+          )}
+          {(!showOnboarding || showOnboardingPartTwo) && !showAllCards && (
+            <List />
+          )}
 
           {/* </SplitPane> */}
         </div>
@@ -86,7 +99,9 @@ export default function page() {
       <InstructionsPopup />
       <ConfirmPopUp />
 
-      {showOnboarding && <OnBoarding />}
+      {showOnboardingPartOne && showOnboarding && <OnBoarding />}
+      {showOnboardingPartTwo && showOnboarding && <OnBoardingPartTwo />}
+
       {showAllCards && <ShowAllCards />}
 
       {errorNoCategories && (

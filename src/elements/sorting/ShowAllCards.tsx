@@ -9,17 +9,19 @@ import CardContent from "./CardContent";
 const ShowAllCards = () => {
   const dispatch = useDispatch();
 
-  const [close, setClose] = React.useState(false);
+  const [close, setClose] = useState(false);
 
   const onStartClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setClose(!close);
-
     const animationDelay = (totalCards - 1) * 45;
     const animationDuration = 300;
     setTimeout(() => {
       dispatch(uiAction.showAllCards(false));
       dispatch(uiAction.startSort());
+      // dispatch(uiAction.toggleOnBoarding(false));
+
+      dispatch(uiAction.toggleOnBoardingPartTwo(true));
     }, animationDelay + animationDuration);
   };
 

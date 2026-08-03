@@ -4,6 +4,9 @@ import { setTimeStarted } from "actions/sorting/uiAction";
 
 export interface SortingUIState {
   showOnBoarding: boolean;
+  showOnBoardingPartOne: boolean;
+  showOnBoardingPartTwo: boolean;
+  onBoardingFinalStep: boolean;
   showAllCards: boolean;
   studyID?: string;
   studyTitle: string;
@@ -32,6 +35,9 @@ const initialState: SortingUIState = {
   studyTitle: "",
   studyDescription: "",
   showOnBoarding: true,
+  showOnBoardingPartOne: true,
+  showOnBoardingPartTwo: false,
+  onBoardingFinalStep: false,
   showAllCards: false,
   showConfirmPopUp: false,
   showDescriptionPopup: false,
@@ -54,6 +60,15 @@ const sortingUiReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(uiAction.toggleOnBoarding, (state, action) => {
       state.showOnBoarding = action.payload;
+    })
+    .addCase(uiAction.toggleOnBoardingPartOne, (state, action) => {
+      state.showOnBoardingPartOne = action.payload;
+    })
+    .addCase(uiAction.toggleOnBoardingPartTwo, (state, action) => {
+      state.showOnBoardingPartTwo = action.payload;
+    })
+    .addCase(uiAction.toggleBoardingFinalStep, (state, action) => {
+      state.onBoardingFinalStep = action.payload;
     })
     .addCase(uiAction.showAllCards, (state, action) => {
       state.showAllCards = action.payload;
