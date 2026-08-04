@@ -13,10 +13,7 @@ const OnBoardingPartTwo = () => {
     e.stopPropagation();
     dispatch(uiAction.toggleOnBoarding(false));
     dispatch(uiAction.toggleOnBoardingPartOne(false));
-
     dispatch(uiAction.toggleOnBoardingPartTwo(false));
-
-    // dispatch(uiAction.showAllCards(true));
   };
 
   const [nextStep, setNextStep] = useState(3);
@@ -30,13 +27,13 @@ const OnBoardingPartTwo = () => {
       >
         <span>
           <span className="step">
-            {/* <span className="step-number">2</span> */}
             <h3>Step 2</h3>
           </span>
           <div className="step-explainer">
             <p>
               Drag a <b>card</b> into this area to create your{" "}
-              <b>first group</b>.
+              <b>first group</b>. You can also give a color to your group by
+              clicking on the <b>color picker</b> button.
             </p>
           </div>
           <div className="ok-btn">
@@ -51,6 +48,7 @@ const OnBoardingPartTwo = () => {
           </div>
         </span>
       </div>
+
       <div
         className={
           nextStep === 4 ? "finish-explainer" : "finish-explainer hidden"
@@ -58,7 +56,6 @@ const OnBoardingPartTwo = () => {
       >
         <span>
           <span className="step">
-            {/* <span className="step-number">3</span> */}
             <h3>Step 3</h3>
           </span>
           <div className="step-explainer">

@@ -414,7 +414,7 @@ li.card {
   // animation: cardsDecked 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
   // transition: all 2s ease-in;
   h4 {
-    font-size: 1.2rem;
+    font-size: 1.125rem;
     font-weight: 800;
     max-width: 10rem;
     text-transform: lowercase;
@@ -430,10 +430,11 @@ li.card {
   }
   &.dragging {
     opacity: 0;
+    border-radius: 20px;
   }
 
   &.minimized {
-    border-radius: 20px;
+    border-radius: 15px;
     box-shadow: none;
     display: flex;
     // border: solid 1px #999999;
@@ -443,13 +444,23 @@ li.card {
     min-height: min-content;
     width: 100%;
     padding-left: 5px;
-    box-shadow: 0 0px 2px 1px #00000029;
+    box-shadow:
+      0 0 0px 1px #00000014,
+      2px 2px 7px #00000017;
+
     position: relative;
     text-align: start;
     justify-content: flex-start;
+    align-items: center;
 
     .titles p {
       margin-top: 0.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .titles h4 {
+      padding-left: 0.5rem;
+      text-wrap: wrap;
     }
 
     button {
@@ -472,12 +483,12 @@ li.card {
   padding: 0.5rem;
   font-weight: bold;
   text-align: center;
-  color: rgb(128, 128, 128);
+  color: rgb(34, 34, 34);
   // border-top: 1px solid #ddd;
-  box-shadow: 0px -1px 3px #0000001a;
+  // box-shadow: 0px -1px 3px #0000001a;
   width: 14rem;
-  border-bottom-left-radius: 25px;
-  border-bottom-right-radius: 25px;
+  border-bottom-left-radius: 19px;
+  border-bottom-right-radius: 19px;
   background-color: #fafafa;
 }
 
@@ -486,8 +497,8 @@ li.card {
   background-color: white;
   align-items: center;
   // border: solid 1px #1d1d1d;
-  border-radius: 25px;
-  box-shadow: 0 2px 4px rgb(0, 0, 0, 16%);
+  border-radius: 20px;
+  box-shadow: 2px 5px 5px 0px #0000000a;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -516,9 +527,10 @@ li.card {
     box-sizing: border-box;
     border-top-left-radius: 25px;
     border-top-right-radius: 25px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    // box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     display: flex;
-    padding: var.$spacing-xs var.$spacing-md;
+    padding: var.$spacing-md;
+    padding-bottom: var.$spacing-sm;
     width: 100%;
 
     button.minimize {
@@ -528,7 +540,7 @@ li.card {
     h3 {
       cursor: pointer;
       display: inline-block;
-      font-size: 1.2rem;
+      font-size: 1.125rem;
       max-width: 90%;
       margin: 0;
       overflow: hidden;
@@ -536,6 +548,7 @@ li.card {
       text-overflow: ellipsis;
       vertical-align: middle;
       white-space: nowrap;
+      font-weight: bold;
 
       &::first-letter {
         text-transform: uppercase;
@@ -549,6 +562,9 @@ li.card {
     display: flex;
     flex-direction: column;
     gap: var.$spacing-sm;
+    min-height: 4rem;
+    margin-top: 0;
+    margin-bottom: 0;
     padding: var.$spacing-xs;
     width: 100%;
   }
@@ -585,7 +601,7 @@ li.card {
     align-items: center;
     background-color: white;
     display: flex;
-    border-radius: 30px;
+    border-radius: 20px;
 
     flex-direction: column;
     justify-content: center;
@@ -608,7 +624,7 @@ li.card {
     background: 0;
     border: 1px;
     border-style: dashed;
-    border-radius: 30px;
+    border-radius: 25px;
     box-shadow: none;
     display: flex;
     justify-content: center;

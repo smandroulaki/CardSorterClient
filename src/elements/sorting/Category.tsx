@@ -43,13 +43,54 @@ const Category: React.FC<CategoryProps> = ({
   const [bgColor, setBgColor] = useState(color || "#ffffff");
   const [showPicker, setShowPicker] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const pickerRef = useRef<HTMLDivElement | null>(null);
 
-  const handleColorClick = () => {
-    setShowPicker(!showPicker);
+  const presetColors = [
+    "#ffffff",
+    "#ff9e9e",
+    "#ffb380",
+    "#ffecb3",
+    "#d4e1a1",
+    "#b9ebeb",
+    "#a9c9f4",
+    "#c9c1f2",
+    "#ef98c7",
+  ];
+
+  const handleColorClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setShowPicker((prev) => !prev);
+  };
+
+  const applyPresetColor = (preset: string) => {
+    setBgColor(preset);
+    dispatch(
+      sortingBoardAction.addColorCategory({
+        categoryID: id,
+        color: preset,
+      }),
+    );
+    setShowPicker(false);
+  };
+
+  const openColorWheel = () => {
     if (inputRef.current) {
       inputRef.current.click();
     }
+    setShowPicker(false);
   };
+
+  useEffect(() => {
+    const handleOutsideClick = (e: Event) => {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setShowPicker(false);
+      }
+    };
+    if (showPicker) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [showPicker]);
 
   const categories = useSelector(
     (state: StateSchema) => state.sortingBoard.categories,
@@ -195,21 +236,9 @@ const Category: React.FC<CategoryProps> = ({
             </IconButton>
           </div>
         ) : (
-          <>
-            <h3 onClick={onTitleClick} title={title}>
-              {title || t("click to rename")}
-            </h3>
-
-            <IconButton
-              aria-label="Expand description"
-              onClick={onMinimized}
-              className="minimize"
-            >
-              <span className="material-symbols-outlined">
-                {isMinimized ? "expand_content" : "minimize"}
-              </span>
-            </IconButton>
-          </>
+          <h3 onClick={onTitleClick} title={title}>
+            {title || t("click to rename")}
+          </h3>
         )}
       </div>
       {isOver && (
@@ -231,40 +260,111 @@ const Category: React.FC<CategoryProps> = ({
           />
         ))}
       </ul>
-      <div className="card-count-footer">
-        {cards.length} {cards.length === 1 ? "card" : "cards"}
+      <div
+        className="card-count-footer"
+        style={{ position: "relative", backgroundColor: bgColor }}
+      >
+        <span style={{ paddingLeft: "0.5rem" }}>
+          {cards.length} {cards.length === 1 ? "card" : "cards"}
+        </span>
         <button
           onClick={handleColorClick}
           style={{
-            width: 24,
-            height: 24,
-            borderRadius: "50%",
-            border: "1px solid #d1d5db",
-            background: color
-              ? color
-              : "conic-gradient(red, yellow, lime, cyan, blue, magenta, red)",
+            width: 20,
+            height: 20,
+            border: "none",
+            background: "none",
+            //  "conic-gradient( #ff9e9e,#ffb380,#ffecb3,#d4e1a1,#a9c9f4,#c9c1f2,#ef98c7)",
             cursor: "pointer",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
             outline: "none",
             padding: 0,
-            overflow: "hidden",
+            paddingRight: "1.5rem",
             flexShrink: 0,
           }}
         >
-          <input
-            ref={inputRef}
-            type="color"
-            value={bgColor}
-            onChange={(e) => setBgColor(e.target.value)}
-            className="changeColor"
+          <span className="material-symbols-outlined">palette</span>
+        </button>
+        <input
+          ref={inputRef}
+          type="color"
+          value={bgColor}
+          onChange={(e) => setBgColor(e.target.value)}
+          className="changeColor"
+          style={{
+            position: "absolute",
+            opacity: 0,
+            width: 0,
+            height: 0,
+            pointerEvents: "none",
+          }}
+        />
+        {showPicker && (
+          <div
+            ref={pickerRef}
             style={{
               position: "absolute",
-              opacity: 0,
-              width: 0,
-              height: 0,
+              top: "100%",
+              right: 0,
+              background: "#fff",
+              border: "1px solid #e5e7eb",
+              borderRadius: 25,
+              padding: "1rem",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+              zIndex: 100,
+              minWidth: 180,
             }}
-          />
-        </button>
+          >
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 6,
+                marginBottom: 10,
+              }}
+            >
+              {presetColors.map((preset) => (
+                <button
+                  key={preset}
+                  onClick={() => applyPresetColor(preset)}
+                  title={preset}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: "50%",
+                    backgroundColor: preset,
+                    border:
+                      bgColor === preset
+                        ? "2px solid #6366f1"
+                        : "1px solid #d1d5db",
+                    cursor: "pointer",
+                    padding: 0,
+                    outline: "none",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                  }}
+                />
+              ))}
+            </div>
+            <button
+              onClick={openColorWheel}
+              style={{
+                display: "flex",
+                justifySelf: "end",
+                alignItems: "center",
+                gap: 6,
+                padding: "5px ",
+                borderRadius: 6,
+                border: "1px solid #e5e7eb",
+                background: "#ffffff",
+                cursor: "pointer",
+                fontSize: 14,
+                color: "#48494a",
+              }}
+            >
+              <span className="material-symbols-outlined">colorize</span>
+              Custom color
+            </button>
+          </div>
+        )}
       </div>
     </li>
   );

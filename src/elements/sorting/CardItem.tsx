@@ -69,7 +69,7 @@ const CardItem: React.FC<CardItemProps> = ({
           onClick={onClick}
           className={showDescription ? "open" : ""}
         >
-          <span className="material-symbols-outlined">arrow_drop_down</span>
+          <span className="material-symbols-rounded">keyboard_arrow_down</span>
         </IconButton>
       )}
       {/* The "drag to add" action */}

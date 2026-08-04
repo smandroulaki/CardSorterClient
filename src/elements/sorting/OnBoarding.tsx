@@ -12,14 +12,8 @@ const OnBoarding = () => {
 
   const onClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // dispatch(uiAction.toggleOnBoarding(false));
     dispatch(uiAction.toggleOnBoardingPartOne(false));
-
-    // dispatch(uiAction.toggleOnBoardingPartTwo(true));
-
     dispatch(uiAction.showAllCards(true));
-
-    // dispatch(uiAction.startSort());
   };
 
   const [nextStep, setNextStep] = useState(-1);
@@ -63,14 +57,11 @@ const OnBoarding = () => {
           </div>
         </span>
       </div>
-
       <div
         className={nextStep === 1 ? "list-explainer" : "list-explainer hidden"}
       >
         <span>
-          <div>...</div>
           <span className="step">
-            {/* <span className="step-number">1</span> */}
             <h3>Step 1</h3>
           </span>
           <div className="step-explainer">
@@ -89,7 +80,6 @@ const OnBoarding = () => {
             <Button
               onClick={(e) => {
                 onClick(e);
-                // dispatch(uiAction.showAllCards(true));
                 setNextStep(2);
               }}
             >
@@ -98,61 +88,6 @@ const OnBoarding = () => {
           </div>
         </span>
       </div>
-      {/* <div className={nextStep === 2 ? "start-btn" : "start-btn hidden"}>
-        <Button
-          variant="contained"
-          onClick={() => {
-            setNextStep(3);
-            dispatch(uiAction.showAllCards(false));
-          }}
-        >
-          {"Start Sorting"}
-        </Button>
-      </div> */}
-      {/* <div
-        className={
-          nextStep === 3 ? "board-explainer " : "board-explainer hidden"
-        }
-      >
-        <span>
-          <span className="step">
-            <span className="step-number">2</span>
-            <h3>Step 2</h3>
-          </span>
-          <p>
-            Drag an item from the left into this area to create your first
-            group.
-          </p>
-          <Button
-            onClick={() => {
-              setNextStep(4);
-            }}
-          >
-            Ok i'm ready
-          </Button>
-        </span>
-      </div>
-      <div
-        className={
-          nextStep === 4 ? "finish-explainer" : "finish-explainer hidden"
-        }
-      >
-        <span>
-          <span className="step">
-            <span className="step-number">3</span>
-            <h3>Step 3</h3>
-          </span>
-          <p>When you feel like you are done, press the finish button.</p>
-          <Button
-            onClick={(e) => {
-              setNextStep(0);
-              onClick(e);
-            }}
-          >
-            Ok i'm ready
-          </Button>
-        </span>
-      </div> */}
     </div>
   );
 };
