@@ -1,15 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import { DropTargetMonitor, useDrop } from "react-dnd";
+import { DropTargetMonitor, useDrop, useDragLayer } from "react-dnd";
 
 import Category from "./Category";
 import { useDispatch, useSelector } from "react-redux";
 import StateSchema from "reducers/StateSchema";
 import * as sortingBoardAction from "actions/sorting/sortingBoardAction";
 import { useTranslations } from "next-intl";
-import { sort } from "d3";
 import ProgressBar from "./ProgressBar/ProgressBar";
+import { SortingCategory } from "reducers/sorting/sortingBoardReducer";
+import { DragOverlay } from "@dnd-kit/core";
+import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 
-const Board = () => {
+interface BoardProps {
+  activeCategory: SortingCategory | null;
+}
+
+const Board = ({ activeCategory }: BoardProps) => {
   const t = useTranslations("SortingPage");
 
   // Clap animation
@@ -46,6 +52,60 @@ const Board = () => {
     (state: StateSchema) => state.sortingUi?.sortType ?? "open",
   );
 
+  const categoryOrder = useSelector(
+    (state: StateSchema) => state.sortingBoard.categoryOrder,
+  );
+
+  const categoryRefs = useRef<Record<number, HTMLElement | null>>({});
+
+  const { isDraggingCard, clientOffset } = useDragLayer((monitor) => ({
+    isDraggingCard:
+      monitor.isDragging() && monitor.getItemType() === "card-drag",
+    clientOffset: monitor.getClientOffset(),
+  }));
+
+  const getInsertIndex = (): number => {
+    if (!clientOffset) return categoryOrder.length;
+
+    // Group categories into rows by their top position
+    const entries = categoryOrder
+      .map((id, index) => {
+        const el = categoryRefs.current[id];
+        if (!el) return null;
+        const rect = el.getBoundingClientRect();
+        return { id, index, rect };
+      })
+      .filter(Boolean) as { id: number; index: number; rect: DOMRect }[];
+
+    // Find which row the cursor is in (closest row by vertical center)
+    const rowTops = [
+      ...new Set(entries.map((e) => Math.round(e.rect.top / 10) * 10)),
+    ];
+    const cursorRowTop = rowTops.reduce(
+      (closest, top) =>
+        Math.abs(top - clientOffset.y) < Math.abs(closest - clientOffset.y)
+          ? top
+          : closest,
+      rowTops[0],
+    );
+
+    // Filter to only entries on that row
+    const rowEntries = entries.filter(
+      (e) => Math.round(e.rect.top / 10) * 10 === cursorRowTop,
+    );
+
+    // Within the row, find insert position by x
+    for (const entry of rowEntries) {
+      if (clientOffset.x < entry.rect.left + entry.rect.width / 2) {
+        return entry.index;
+      }
+    }
+
+    // Cursor is past the last item in the row — insert after last item in that row
+    return rowEntries[rowEntries.length - 1].index + 1;
+  };
+
+  const hoveredGapIndex = isDraggingCard ? getInsertIndex() : null;
   // Dispatch
   const dispatch = useDispatch();
 
@@ -96,6 +156,7 @@ const Board = () => {
           sortingBoardAction.createCategory({
             categoryID: undefined,
             cardID: card.id,
+            insertAtIndex: getInsertIndex(),
           }),
         );
         handleSortAnimation();
@@ -132,25 +193,64 @@ const Board = () => {
 
       {/* @ts-ignore */}
       <div id="board" ref={dropRef} className="category-board">
-        {Object.values(categories).map((category) => (
-          <Category
-            key={"k" + category.id}
-            id={category.id}
-            title={category.title}
-            color={category.color}
-            cards={category.cards}
-            predefined={category.predefined}
-            onSortAnimation={() => {
-              handleSortAnimation();
-            }}
-          />
-        ))}
-        {isOver && (sortType === "open" || sortType === "hybrid") && (
+        <SortableContext items={categoryOrder} strategy={rectSortingStrategy}>
+          {isOver &&
+            (sortType === "open" || sortType === "hybrid") &&
+            isDraggingCard &&
+            hoveredGapIndex === 0 && (
+              <div className=" category drop-to-create active">
+                <span className="material-symbols-outlined">add</span>
+                <p>{t("drop to create category")}</p>
+              </div>
+            )}
+          {categoryOrder.map((id, index) => {
+            const category = categories[id];
+            if (!category) return null;
+            return (
+              <React.Fragment key={id}>
+                <Category
+                  id={category.id}
+                  title={category.title}
+                  cards={category.cards}
+                  color={category.color}
+                  predefined={category.predefined}
+                  onSortAnimation={handleSortAnimation}
+                  innerRef={(el) => {
+                    categoryRefs.current[id] = el;
+                  }}
+                />
+                {isOver &&
+                  (sortType === "open" || sortType === "hybrid") &&
+                  isDraggingCard &&
+                  hoveredGapIndex === index + 1 && (
+                    <div className="category drop-to-create active">
+                      <span className="material-symbols-outlined">add</span>
+                      <p>{t("drop to create category")}</p>
+                    </div>
+                  )}
+              </React.Fragment>
+            );
+          })}
+        </SortableContext>
+
+        <DragOverlay>
+          {activeCategory ? (
+            <Category
+              id={activeCategory.id}
+              title={activeCategory.title}
+              cards={activeCategory.cards}
+              color={activeCategory.color}
+              predefined={activeCategory.predefined}
+              isOverlay
+            />
+          ) : null}
+        </DragOverlay>
+        {/* {isOver && (sortType === "open" || sortType === "hybrid") && (
           <div className="category drop-to-create">
             <span className="material-symbols-outlined">add</span>
             <p>{t("drop to create category")}</p>
           </div>
-        )}
+        )} */}
         <div className={`clap-animation${showClap ? " active" : ""}`}>👏</div>
         <div className={`fire-animation${showFire ? " active" : ""}`}>🔥</div>
       </div>

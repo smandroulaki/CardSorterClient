@@ -8,6 +8,7 @@ import { SortingCategory } from "reducers/sorting/sortingBoardReducer";
 export interface CategoryRequest {
   cards: number[];
   id: number;
+  insertAtIndex: number;
   title: string;
   color: string;
 }

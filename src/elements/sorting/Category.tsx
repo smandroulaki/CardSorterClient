@@ -17,6 +17,8 @@ import { useTranslations } from "next-intl";
 import * as uiActions from "actions/sorting/uiAction";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface CategoryProps {
   id: number;
@@ -24,7 +26,10 @@ interface CategoryProps {
   color?: string;
   cards: SortingCard[];
   predefined?: boolean;
+  insertAtIndex?: number;
+  isOverlay?: boolean;
   onSortAnimation?: () => void;
+  innerRef?: (el: HTMLLIElement | null) => void;
 }
 
 const Category: React.FC<CategoryProps> = ({
@@ -33,7 +38,10 @@ const Category: React.FC<CategoryProps> = ({
   color,
   cards,
   predefined,
+  isOverlay,
+  insertAtIndex,
   onSortAnimation,
+  innerRef,
 }) => {
   const t = useTranslations("SortingPage");
 
@@ -106,6 +114,26 @@ const Category: React.FC<CategoryProps> = ({
 
   // Dispatch
   const dispatch = useDispatch();
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, disabled: !!isOverlay });
+
+  const rawTransform = CSS.Transform.toString(transform);
+  const translateOnly = rawTransform
+    ? rawTransform.replace(/scaleY\([^)]*\)/g, "")
+    : undefined;
+
+  const style: React.CSSProperties = {
+    transform: translateOnly,
+    transition,
+    opacity: isDragging ? 0.35 : 1,
+  };
 
   const onTitleClick = (event: MouseEvent<HTMLHeadingElement>) => {
     if (predefined) return;
@@ -204,6 +232,12 @@ const Category: React.FC<CategoryProps> = ({
     [id],
   );
 
+  const setRefs = (el: HTMLLIElement | null) => {
+    setNodeRef(el);
+    drop(el);
+    if (innerRef) innerRef(el);
+  };
+
   let classString = "category";
   if (isOver) {
     classString += " max-height";
@@ -211,11 +245,26 @@ const Category: React.FC<CategoryProps> = ({
   if (isMinimized) {
     classString += " minimized";
   }
+  if (isOverlay) classString += " dragging-overlay";
 
   return (
     // @ts-ignore
-    <li className={classString} ref={drop} style={{ backgroundColor: bgColor }}>
+    <li
+      className={classString}
+      ref={setRefs}
+      style={{ ...style, backgroundColor: bgColor }}
+      {...attributes}
+    >
       <div className="header">
+        {!isOverlay && (
+          <span
+            className="material-symbols-outlined drag-handle"
+            {...listeners}
+            style={{ cursor: "grab", touchAction: "none", color: "#8582826b" }}
+          >
+            drag_indicator
+          </span>
+        )}
         {showEditTitle ? (
           <div className="title-input">
             <TextField

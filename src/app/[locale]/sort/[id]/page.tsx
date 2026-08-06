@@ -5,10 +5,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import SplitPane from "react-split-pane";
 
+import {
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverEvent,
+  DragOverlay,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  closestCenter,
+} from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 import List from "elements/sorting/List";
 import * as uiActions from "actions/sorting/uiAction";
+import * as sortingBoardAction from "actions/sorting/sortingBoardAction";
 import StateSchema from "reducers/StateSchema";
 import ConfirmPopUp from "elements/sorting/ConfirmPopUp";
 import ErrorToast from "elements/sorting/ErrorToast";
@@ -22,7 +34,18 @@ import LoadSortData from "elements/sorting/LoadSortData";
 import { useParams } from "next/navigation";
 import ShowAllCards from "elements/sorting/ShowAllCards";
 import OnBoardingPartTwo from "elements/sorting/OnBoardingPartTwo";
+import { PointerSensor as DndKitPointerSensor } from "@dnd-kit/core";
 
+class DragHandleSensor extends DndKitPointerSensor {
+  static activators = [
+    {
+      eventName: "onPointerDown" as const,
+      handler: ({ nativeEvent }: React.PointerEvent): boolean => {
+        return !!(nativeEvent.target as HTMLElement).closest(".drag-handle");
+      },
+    },
+  ];
+}
 export default function page() {
   const { id } = useParams<{ id: string }>();
   const t = useTranslations("SortingPage");
@@ -57,7 +80,38 @@ export default function page() {
   const commentSaved = useSelector(
     (state: StateSchema) => state.sortingUi.commentSaved,
   );
+  const categories = useSelector(
+    (state: StateSchema) => state.sortingBoard.categories,
+  );
 
+  const categoryOrder = useSelector(
+    (state: StateSchema) => state.sortingBoard.categoryOrder,
+  );
+
+  const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
+  const activeCategory = activeCategoryId ? categories[activeCategoryId] : null;
+
+  const sensors = useSensors(useSensor(DragHandleSensor));
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveCategoryId(event.active.id as number);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveCategoryId(null);
+
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = categoryOrder.indexOf(active.id as number);
+    const newIndex = categoryOrder.indexOf(over.id as number);
+    const newOrder = arrayMove(categoryOrder, oldIndex, newIndex);
+    dispatch(sortingBoardAction.reorderCategories({ orderedIDs: newOrder }));
+  };
+
+  const handleDragCancel = () => {
+    setActiveCategoryId(null);
+  };
   // Dispatch
   const dispatch = useDispatch<any>();
 
@@ -73,27 +127,24 @@ export default function page() {
   return (
     <>
       <LoadSortData id={id} />
-      <DndProvider backend={HTML5Backend}>
-        <div id="main-panel">
-          {/*@ts-ignore*/}
-          {/* <SplitPane
-            className="split-pane"
-            split="horizontal"
-            minSize={200}
-            maxSize={-300}
-            defaultSize={'18rem'}
-          > */}
-          {(!showOnboarding || showOnboardingPartTwo) && !showAllCards && (
-            <Board />
-          )}
-          {(!showOnboarding || showOnboardingPartTwo) && !showAllCards && (
-            <List />
-          )}
-
-          {/* </SplitPane> */}
-        </div>
-      </DndProvider>
-
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
+      >
+        <DndProvider backend={HTML5Backend}>
+          <div id="main-panel">
+            {(!showOnboarding || showOnboardingPartTwo) && !showAllCards && (
+              <Board activeCategory={activeCategory} />
+            )}
+            {(!showOnboarding || showOnboardingPartTwo) && !showAllCards && (
+              <List />
+            )}
+          </div>
+        </DndProvider>
+      </DndContext>
       <CommentPopup />
       <DescriptionPopup />
       <InstructionsPopup />

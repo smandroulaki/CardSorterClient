@@ -13,6 +13,7 @@ export interface SortingCategory {
   id: number;
   title?: string;
   color?: string;
+  insertAtIndex?: number;
   display_title?: string;
   isMinimized?: boolean;
   cards: SortingCard[];
@@ -24,11 +25,13 @@ export interface SortingBoardState {
   status?: string;
   notFound?: boolean;
   categories: Record<number, SortingCategory>;
+  categoryOrder: number[];
 }
 
 const initialState: SortingBoardState = {
   unsortedCards: [],
   categories: {},
+  categoryOrder: [],
   status: undefined,
   notFound: false,
 };
@@ -79,6 +82,12 @@ export default createReducer(initialState, (builder) => {
       } else {
         state.categories[id] = { id: id, cards: [], predefined: false };
       }
+
+      const insertAt =
+        action.payload.insertAtIndex ?? state.categoryOrder.length;
+      state.categoryOrder.splice(insertAt, 0, id);
+
+      // state.categoryOrder.push(id);
     })
     .addCase(sortingBoardAction.removeCategory, (state, action) => {
       const categoryID = action.payload.categoryID;
@@ -86,7 +95,6 @@ export default createReducer(initialState, (builder) => {
       state.unsortedCards = state.unsortedCards.concat(
         state.categories[categoryID].cards,
       );
-
       delete state.categories[categoryID];
     })
     .addCase(sortingBoardAction.renameCategory, (state, action) => {
@@ -129,6 +137,9 @@ export default createReducer(initialState, (builder) => {
           !category.predefined &&
           !action.payload.preserve
         ) {
+          state.categoryOrder = state.categoryOrder.filter(
+            (id) => id !== categoryID,
+          );
           delete state.categories[categoryID];
         }
       }
@@ -147,14 +158,19 @@ export default createReducer(initialState, (builder) => {
       state.categories = {};
       state.status = undefined;
       state.notFound = false;
+      state.categoryOrder = [];
     })
     .addCase(sortingBoardAction.loadSavedState, (state, action) => {
       state.categories = action.payload.categories;
       state.unsortedCards = action.payload.unsortedCards;
+      state.categoryOrder = Object.keys(action.payload.categories).map(Number);
     })
     .addCase(sortingBoardAction.addColorCategory, (state, action) => {
       const categoryID = action.payload.categoryID;
       state.categories[categoryID].color = action.payload.color;
+    })
+    .addCase(sortingBoardAction.reorderCategories, (state, action) => {
+      state.categoryOrder = action.payload.orderedIDs;
     })
     .addCase(loadCategories, (state, action) => {
       state.categories = {};
@@ -167,5 +183,6 @@ export default createReducer(initialState, (builder) => {
           predefined: true,
         };
       });
+      state.categoryOrder = action.payload.categories.map((cat) => cat.id);
     });
 });
