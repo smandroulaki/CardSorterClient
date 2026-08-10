@@ -10,6 +10,7 @@ import ProgressBar from "./ProgressBar/ProgressBar";
 import { SortingCategory } from "reducers/sorting/sortingBoardReducer";
 import { DragOverlay } from "@dnd-kit/core";
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
+import { playSound } from "utils/audio/sounds";
 
 interface BoardProps {
   activeCategory: SortingCategory | null;
@@ -132,6 +133,7 @@ const Board = ({ activeCategory }: BoardProps) => {
       if (clapTimer.current) clearTimeout(clapTimer.current);
       clapTimer.current = setTimeout(() => setShowClap(false), 1200);
     }
+    playSound("table");
   };
 
   const [{ isOver }, dropRef] = useDrop({
@@ -152,6 +154,7 @@ const Board = ({ activeCategory }: BoardProps) => {
             }),
           );
         }
+
         dispatch(
           sortingBoardAction.createCategory({
             categoryID: undefined,
@@ -172,6 +175,7 @@ const Board = ({ activeCategory }: BoardProps) => {
                 categoryID: categories[i].id,
               }),
             );
+
             break;
           }
         }

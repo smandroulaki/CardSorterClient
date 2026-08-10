@@ -35,6 +35,7 @@ import { useParams } from "next/navigation";
 import ShowAllCards from "elements/sorting/ShowAllCards";
 import OnBoardingPartTwo from "elements/sorting/OnBoardingPartTwo";
 import { PointerSensor as DndKitPointerSensor } from "@dnd-kit/core";
+import { playSound } from "utils/audio/sounds";
 
 class DragHandleSensor extends DndKitPointerSensor {
   static activators = [
@@ -106,6 +107,7 @@ export default function page() {
     const oldIndex = categoryOrder.indexOf(active.id as number);
     const newIndex = categoryOrder.indexOf(over.id as number);
     const newOrder = arrayMove(categoryOrder, oldIndex, newIndex);
+    playSound("hand");
     dispatch(sortingBoardAction.reorderCategories({ orderedIDs: newOrder }));
   };
 

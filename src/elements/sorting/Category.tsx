@@ -296,7 +296,7 @@ const Category: React.FC<CategoryProps> = ({
           <p>{t("drop to add")}</p>
         </div>
       )}
-      <ul>
+      <ul style={{ background: bgColor }}>
         {cards.map((card) => (
           <CardItem
             key={card.id}
@@ -323,7 +323,6 @@ const Category: React.FC<CategoryProps> = ({
             height: 20,
             border: "none",
             background: "none",
-            //  "conic-gradient( #ff9e9e,#ffb380,#ffecb3,#d4e1a1,#a9c9f4,#c9c1f2,#ef98c7)",
             cursor: "pointer",
             outline: "none",
             padding: 0,

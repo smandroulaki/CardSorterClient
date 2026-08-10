@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as uiAction from "actions/sorting/uiAction";
-import List from "./List";
+// import List from "./List";
 import Button from "@mui/material/Button";
 import StateSchema from "reducers/StateSchema";
 import CardContent from "./CardContent";
+import { playSound } from "../../utils/audio/sounds";
 
 const ShowAllCards = () => {
   const dispatch = useDispatch();
@@ -14,6 +15,8 @@ const ShowAllCards = () => {
   const onStartClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setClose(!close);
+    playSound("flickthrough");
+
     const animationDelay = (totalCards - 1) * 45;
     const animationDuration = 300;
     setTimeout(() => {
@@ -30,6 +33,18 @@ const ShowAllCards = () => {
   );
 
   const totalCards = unsortedCards.length;
+
+  useEffect(() => {
+    if (unsortedCards.length > 0) {
+      unsortedCards.forEach((_, index) => {
+        if (index % 3 === 0) {
+          setTimeout(() => {
+            playSound("open");
+          }, index * 55);
+        }
+      });
+    }
+  }, []);
 
   return (
     <div className={close ? "show-all closed" : "show-all"}>

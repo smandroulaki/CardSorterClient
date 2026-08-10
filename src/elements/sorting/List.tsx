@@ -1,9 +1,11 @@
+"use client";
 import { useState, useEffect, useRef } from "react";
 import CardItem from "./CardItem";
 import { DropTargetMonitor, useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import StateSchema from "reducers/StateSchema";
 import * as sortingBoardAction from "actions/sorting/sortingBoardAction";
+import { playSound } from "../../utils/audio/sounds";
 
 const List: React.FC = () => {
   // State
@@ -28,6 +30,7 @@ const List: React.FC = () => {
     ) => {
       // If the card is already in container
       if (item.position === -1) return;
+      playSound("play");
 
       dispatch(
         sortingBoardAction.removeCardFromCategory({
@@ -50,6 +53,7 @@ const List: React.FC = () => {
 
     const t = setTimeout(() => {
       setPhase("spreading");
+      playSound("shuffle");
     }, 300);
 
     const t2 = setTimeout(() => {
@@ -87,31 +91,9 @@ const List: React.FC = () => {
   const isSpread = spread;
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
-  // function scrollContainer(amount: any) {
-  //   const container = document.getElementById("list");
-  //   container?.scrollBy({
-  //     left: amount,
-  //     behavior: "smooth",
-  //   });
-  //   console.log("clicked", container);
-  // }
-
   return (
     //  @ts-ignore
     <ul id="list" ref={drop}>
-      {/* <button
-        id="scroll-left"
-        onClick={() => scrollContainer(-300)}
-        style={{
-          position: "fixed",
-          left: "2rem",
-          bottom: "10rem",
-          color: "red",
-          zIndex: 99999999999,
-        }}
-      >
-        ◀
-      </button> */}
       {unsortedCards.map((card, index) => {
         const stackPos = STACK_POSITIONS[index % 10];
         const spread = getSpreadTransform(index);
@@ -123,10 +105,6 @@ const List: React.FC = () => {
         const step = cardWidth + overlapPx;
 
         const spreadOffsetX = index * step;
-        // const screenWidth = window.innerWidth;
-        // const totalWidth = (unsortedCards.length - 1) * step;
-
-        // const spreadOffsetX = index * step - totalWidth / 2;
 
         const spreadTransform = `translateX(${spreadOffsetX}px) translateY(${spread.ty}) rotate(${spread.rot})`;
         return (
@@ -161,19 +139,6 @@ const List: React.FC = () => {
           </div>
         );
       })}
-      {/* <button
-        id="scroll-right"
-        onClick={() => scrollContainer(+300)}
-        style={{
-          position: "fixed",
-          bottom: "10rem",
-          right: "2rem",
-          color: "red",
-          zIndex: 99999999999,
-        }}
-      >
-        ▶
-      </button> */}
     </ul>
   );
 };
