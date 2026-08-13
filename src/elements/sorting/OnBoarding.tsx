@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 
 import * as uiAction from "actions/sorting/uiAction";
+import { playSound } from "utils/audio/sounds";
 
 const OnBoarding = () => {
   // Dispatch
@@ -24,7 +25,9 @@ const OnBoarding = () => {
 
   useEffect(() => {
     const t = setTimeout(() => {
-      setNextStep(0);
+      setNextStep(-1);
+      playSound('swoosh');
+
     }, 1000);
 
     return () => clearTimeout(t);
@@ -32,6 +35,26 @@ const OnBoarding = () => {
 
   return (
     <div className="on-boarding-screen">
+
+     <div
+        className={
+          nextStep === -1
+        ? "start-explainer"
+            : "start-explainer hidden"
+        }
+      >
+            <Button
+              onClick={() => {
+                setNextStep(0);
+                playSound('swoosh');
+
+              }}
+            >
+              <h3 style={{marginBottom:0,}}>
+            Start
+            </h3>
+            </Button>
+      </div>
       <div
         className={
           nextStep === 0
@@ -50,6 +73,8 @@ const OnBoarding = () => {
             <Button
               onClick={() => {
                 setNextStep(1);
+                 playSound('swoosh');
+
               }}
             >
               Let's go!
@@ -80,7 +105,7 @@ const OnBoarding = () => {
             <Button
               onClick={(e) => {
                 onClick(e);
-                setNextStep(2);
+                setNextStep(2);                
               }}
             >
               Ok

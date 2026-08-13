@@ -775,6 +775,23 @@ li.card {
   line-height: normal;
 }
 
+.on-boarding-screen .start-explainer {
+  align-items: center;
+  background: var.$color-accent-1;
+  border-radius: 1rem;
+  display: flex;
+  justify-self: center;
+  top: 40%;
+  padding: var.$spacing-xs;
+  position: absolute;
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+
+  box-shadow:
+    0 2px 4px #35246678,
+    inset -3px -2px 4px #a590be,
+    inset 1px 0px 4px #a590be;
+}
+
 .on-boarding-screen .description-explainer {
   align-items: center;
   background: var.$color-accent-1;

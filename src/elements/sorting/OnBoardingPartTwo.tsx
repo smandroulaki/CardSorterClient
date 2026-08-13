@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 
 import * as uiAction from "actions/sorting/uiAction";
+import { playSound } from "utils/audio/sounds";
 
 const OnBoardingPartTwo = () => {
   // Dispatch
@@ -17,6 +18,7 @@ const OnBoardingPartTwo = () => {
   };
 
   const [nextStep, setNextStep] = useState(3);
+  playSound('swoosh');
 
   return (
     <div className="on-boarding-screen">
@@ -40,6 +42,7 @@ const OnBoardingPartTwo = () => {
             <Button
               onClick={() => {
                 setNextStep(4);
+                playSound('swoosh');
                 dispatch(uiAction.toggleBoardingFinalStep(true));
               }}
             >
