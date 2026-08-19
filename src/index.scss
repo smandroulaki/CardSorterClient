@@ -137,3 +137,27 @@ p {
     margin: 0;
   }
 }
+
+.success-submitted {
+  align-items: center;
+  // background-color: var.$color-success-light;
+  // border-radius: 8px;
+  color: var.$color-success-dark;
+  display: flex;
+  flex-direction: column;
+  // height: 8rem;
+  //  width: 8rem;
+  padding: var.$spacing-md;
+  justify-content: center;
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 1,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48;
+
+  font-size:48px;
+}
+
+}

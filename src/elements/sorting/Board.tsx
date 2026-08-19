@@ -65,9 +65,8 @@ const Board = ({ activeCategory }: BoardProps) => {
     clientOffset: monitor.getClientOffset(),
   }));
 
-  const getInsertIndex = (): number => {
+const getInsertIndex = (): number => {
     if (!clientOffset) return categoryOrder.length;
-
     // Group categories into rows by their top position
     const entries = categoryOrder
       .map((id, index) => {
@@ -78,6 +77,8 @@ const Board = ({ activeCategory }: BoardProps) => {
       })
       .filter(Boolean) as { id: number; index: number; rect: DOMRect }[];
 
+    if (entries.length === 0) return categoryOrder.length;
+   
     // Find which row the cursor is in (closest row by vertical center)
     const rowTops = [
       ...new Set(entries.map((e) => Math.round(e.rect.top / 10) * 10)),
@@ -89,7 +90,6 @@ const Board = ({ activeCategory }: BoardProps) => {
           : closest,
       rowTops[0],
     );
-
     // Filter to only entries on that row
     const rowEntries = entries.filter(
       (e) => Math.round(e.rect.top / 10) * 10 === cursorRowTop,
@@ -105,7 +105,6 @@ const Board = ({ activeCategory }: BoardProps) => {
     // Cursor is past the last item in the row — insert after last item in that row
     return rowEntries[rowEntries.length - 1].index + 1;
   };
-
   const hoveredGapIndex = isDraggingCard ? getInsertIndex() : null;
   // Dispatch
   const dispatch = useDispatch();
