@@ -600,7 +600,7 @@ li.card {
 
   .drop-to-add {
     align-items: center;
-    background-color: white;
+    background-color: #e2dfec;
     display: flex;
     border-radius: 20px;
 
@@ -631,6 +631,7 @@ li.card {
     justify-content: center;
     // height: 22rem;
     height: 14rem;
+    background-color: #e2dfec;
 
     opacity: 0.8;
 
@@ -696,22 +697,22 @@ li.card {
   background: white;
   display: flex;
   flex-direction: column;
-  gap: var.$spacing-xl;
-  height: 100vh;
+  // gap: var.$spacing-lg;
+  height: 100dvh;
   width: 100vw;
-  justify-content: center;
-  left: 0;
-  top: 0;
+  justify-content: flex-start;
+  // left: 0;
+  // top: 0;
   overflow: hidden;
-  position: absolute;
+  position: relative;
   z-index: 100;
 
   .logo {
     color: var.$color-text-primary;
     cursor: pointer;
     text-decoration: none;
-    top: 2rem;
-    position: absolute;
+    margin-top: 2rem;
+    // position: absolute;
   }
 
   .logo a {
@@ -721,9 +722,10 @@ li.card {
 
   h2 {
     color: var.$color-text-primary;
-    margin-top: 2rem;
+    margin-bottom: 2rem;
     font-weight: 700;
     font-size: 3.5rem;
+    max-width: 85dvw;
 
     &::first-letter {
       text-transform: uppercase;
@@ -1226,3 +1228,56 @@ ul#list:nth-child(10n) {
 //   align-items: center;
 //   justify-content: center;
 // }
+
+.url-container {
+  background-color: #352466;
+  // margin-top: 2rem;
+  display: flex;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  color: #f0f0f0;
+  font-weight: 500;
+  justify-content: space-between;
+  align-items: center;
+
+  a {
+    color: #f0f0f0;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .copy {
+    color: #f0f0f0;
+  }
+}
+
+.sub-message {
+  font-size: 1rem;
+  margin-top: 1rem;
+  color: #989898;
+  max-width: 85dvw;
+  position: absolute;
+  bottom: 2rem;
+}
+
+.results {
+  padding: 1rem;
+  // background: #f4ffcda3;
+  // border: 1px solid #c2df56;
+  // color: #8fb605;
+  border-radius: 12px;
+  font-size: 1.25rem;
+  max-width: 85dvw;
+  font-weight: 500;
+}
+
+.results-count {
+  color: #8fb605;
+  font-weight: 700;
+}
+
+.share-container {
+  position: absolute;
+  bottom: 5rem;
+  max-width: 85dvw;
+}

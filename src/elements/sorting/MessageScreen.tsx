@@ -1,9 +1,11 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import copyToClipboard from "utils/copyToClipboard";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import Confetti from "react-confetti";
-
+import IconButton from "@mui/material/IconButton";
 
 function useWindowSize() {
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -12,9 +14,9 @@ function useWindowSize() {
     const handleResize = () => {
       setSize({ width: window.innerWidth, height: window.innerHeight });
     };
-    handleResize(); 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return size;
@@ -33,6 +35,7 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
   link,
   success,
   subMessage,
+  results,
 }) => {
   const t = useTranslations("SortingPage");
   const hasValidLink = link && link.trim() !== "";
@@ -43,13 +46,16 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
   ) {
     link = `http://${link}`;
   }
-  const { width, height } = useWindowSize()
-  
+  const { width, height } = useWindowSize();
+
+  let categoriesCount = 0;
+  if (results) {
+    categoriesCount = Object.keys(results as Record<string, any>).length;
+  }
   return (
     <div className="message-screen">
       <h1 className="logo">Card Sorter</h1>
-      {success && 
-      <Confetti width={width} height={height} />}
+      {success && <Confetti width={width} height={height} />}
       {success && (
         <div className="success-submitted">
           <span className="material-symbols-outlined">check_circle</span>
@@ -67,10 +73,15 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
       )}
 
       <h2>{message}</h2>
-      {success && (
+      {success && results && (
         <div className="results">
-          You created
-          {/* {{results}} */}
+          You created{" "}
+          <span className="results-count">
+            {" "}
+            {categoriesCount}{" "}
+            {categoriesCount === 1 ? "category" : "categories"}
+          </span>
+          !
         </div>
       )}
 
@@ -82,15 +93,18 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
               {link}
             </a>
 
-            <button
+            <IconButton
               className="copy"
-              type="button"
+              aria-label="Copy link"
               onClick={() => copyToClipboard(link!)}
-            ></button>
+              edge="end"
+            >
+              <span className="material-symbols-outlined">content_copy</span>
+            </IconButton>
           </div>
         </div>
       )}
-      <h3>{subMessage}</h3>
+      <h3 className="sub-message">{subMessage}</h3>
     </div>
   );
 };

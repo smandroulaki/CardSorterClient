@@ -9,6 +9,9 @@ const SOURCES = {
   hand: `${prefix}/single-in-hand.mp3`,
   open: `${prefix}/place-on-table.mp3`,
   table: `${prefix}/play-table.mp3`,
+  finish: `${prefix}/finish.mp3`,
+  finishh: `${prefix}/finishh.mp3`,
+
   flickthrough: `${prefix}/flick-through.mp3`,
 };
 
