@@ -4,9 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import * as uiAction from "actions/sorting/uiAction";
 import { useTranslations } from "next-intl";
 import Button from "@mui/material/Button";
-import styles from "./SortingHeader.module.scss";
+import styles from "./GamifiedSortingHeader.module.scss";
+import ProgressCount from "../ProgressBar/ProgressCount";
 
-const SortingHeader = () => {
+const GamifiedSortingHeader = () => {
   const t = useTranslations("SortingHeader");
 
   // State
@@ -79,24 +80,55 @@ const SortingHeader = () => {
   const onInstructionsClick = () =>
     dispatch(uiAction.toggleInstructionsPopup(true));
 
+  const onShowAllClick = () => dispatch(uiAction.showAllCards(true));
+
+  const onBoardingFinalStep = useSelector(
+    (state: StateSchema) => state.sortingUi.onBoardingFinalStep,
+  );
+
+  const onBoarding = useSelector(
+    (state: StateSchema) => state.sortingUi.showOnBoarding,
+  );
+
   return (
-    <header className={styles.sortingHeader}>
+    <header
+      className={styles.sortingHeader}
+      style={onBoarding ? { pointerEvents: "none" } : {}}
+    >
+      <h1 className={styles.logo}>Card Sorter</h1>
       <div className={styles.btnContainer}>
+        <ProgressCount />
+        <Button variant="text" onClick={onShowAllClick}>
+          {t("show all")}
+        </Button>
         <Button variant="text" onClick={onInstructionsClick}>
           {t("instructions")}
         </Button>
         <Button variant="text" onClick={onDescriptionClick}>
           {t("show description")}
         </Button>
-        {/*<button className="undo"></button>*/}
+
+        {/* <button className="undo"></button> */}
         {/*<button className="help"></button>*/}
-      </div>
-      <h1 className={styles.logo}>Card Sorter</h1>
-      <div className={styles.btnContainer}>
+        {/* </div>
+      <div className={styles.btnContainer}> */}
+
         <Button variant="outlined" onClick={onCommentClick}>
           {t("add comment")}
         </Button>
-        <Button variant="contained" onClick={onFinishClick}>
+        <Button
+          variant="contained"
+          onClick={onFinishClick}
+          style={
+            onBoardingFinalStep
+              ? {
+                  zIndex: 1000,
+                  boxShadow:
+                    "10px 8px 0 white, -10px 8px 0 white, 10px -8px 0 white, -10px -8px 0 white",
+                }
+              : {}
+          }
+        >
           {t("finish")}
         </Button>
       </div>
@@ -104,4 +136,4 @@ const SortingHeader = () => {
   );
 };
 
-export default SortingHeader;
+export default GamifiedSortingHeader;

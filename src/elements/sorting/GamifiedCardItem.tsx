@@ -13,7 +13,7 @@ interface CardItemProps {
   showDescription?: boolean;
 }
 
-const CardItem: React.FC<CardItemProps> = ({
+const GamifiedCardItem: React.FC<CardItemProps> = ({
   id,
   title,
   description,
@@ -57,7 +57,7 @@ const CardItem: React.FC<CardItemProps> = ({
       )}
 
       {minimized && (
-        <div className="titles">
+        <div className="titles ">
           <h4>{title}</h4>
           {showDescription && <p>{description}</p>}
         </div>
@@ -69,7 +69,7 @@ const CardItem: React.FC<CardItemProps> = ({
           onClick={onClick}
           className={showDescription ? "open" : ""}
         >
-          <span className="material-symbols-outlined">arrow_drop_down</span>
+          <span className="material-symbols-rounded">keyboard_arrow_down</span>
         </IconButton>
       )}
       {/* The "drag to add" action */}
@@ -77,4 +77,4 @@ const CardItem: React.FC<CardItemProps> = ({
   );
 };
 
-export default CardItem;
+export default GamifiedCardItem;
