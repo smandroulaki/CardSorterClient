@@ -25,7 +25,7 @@ import StateSchema from "reducers/StateSchema";
 import ConfirmPopUp from "elements/sorting/ConfirmPopUp";
 import ErrorToast from "elements/sorting/ErrorToast";
 import DescriptionPopup from "elements/sorting/DescriptionPopup";
-import InstructionsPopup from "elements/sorting/InstructionsPopup";
+import GamifiedInstructionsPopup from "elements/sorting/GamifiedInstructionsPopup";
 import CommentPopup from "elements/sorting/CommentPopup";
 import { useTranslations } from "next-intl";
 import LoadSortData from "elements/sorting/LoadSortData";
@@ -150,7 +150,7 @@ export default function page() {
       </DndContext>
       <CommentPopup />
       <DescriptionPopup />
-      <InstructionsPopup />
+      <GamifiedInstructionsPopup />
       <ConfirmPopUp />
 
       {showOnboardingPartOne && showOnboarding && <OnBoardingPartOne />}

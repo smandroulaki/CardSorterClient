@@ -85,9 +85,7 @@ const OnBoardingPartOne = () => {
             <p>
               Take a quick look at the <b>cards.</b>
             </p>
-            <p>
-              We'd like you to sort them into groups that make sense to you.
-            </p>
+            <p>Then, sort them into groups that make sense to you.</p>
             <p>There is no right or wrong answer.</p>
             <p>
               <b> Just do what comes naturally.</b>

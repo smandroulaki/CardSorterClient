@@ -18,7 +18,7 @@ const OnBoardingPartTwo = () => {
   };
 
   const [nextStep, setNextStep] = useState(3);
-  playSound('swoosh');
+  playSound("swoosh");
 
   return (
     <div className="on-boarding-screen">
@@ -34,15 +34,16 @@ const OnBoardingPartTwo = () => {
           <div className="step-explainer">
             <p>
               Drag a <b>card</b> into this area to create your{" "}
-              <b>first group</b>. You can also give a color to your group by
-              clicking on the <b>color picker</b> button.
+              <b>first group</b>. You can reorder groups by dragging them
+              around, and give each one a color using the <b>color picker</b>{" "}
+              button.
             </p>
           </div>
           <div className="ok-btn">
             <Button
               onClick={() => {
                 setNextStep(4);
-                playSound('swoosh');
+                playSound("swoosh");
                 dispatch(uiAction.toggleBoardingFinalStep(true));
               }}
             >
@@ -63,7 +64,8 @@ const OnBoardingPartTwo = () => {
           </span>
           <div className="step-explainer">
             <p>
-              When you feel like you are done, press the <b>finish</b> button.
+              When you're done, click <b>“Finish”</b> to submit your sorting.
+              You can also share a comment about your experience!
             </p>
           </div>
           <div className="ok-btn">
