@@ -48,6 +48,38 @@ const GamifiedList: React.FC = () => {
   const [phase, setPhase] = useState("stacked");
   const [spread, setSpread] = useState(false);
 
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const listRef = useRef<HTMLUListElement | null>(null);
+
+  const updateScrollButtons = () => {
+    const container = listRef.current;
+    if (!container) return;
+
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    setCanScrollLeft(scrollLeft > 0);
+    // small buffer (1px) to avoid float rounding issues
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
+  };
+  useEffect(() => {
+    const container = listRef.current;
+    if (!container) return;
+
+    updateScrollButtons();
+
+    container.addEventListener("scroll", updateScrollButtons);
+    window.addEventListener("resize", updateScrollButtons);
+
+    return () => {
+      container.removeEventListener("scroll", updateScrollButtons);
+      window.removeEventListener("resize", updateScrollButtons);
+    };
+  }, []);
+
+  useEffect(() => {
+    updateScrollButtons();
+  }, [unsortedCards, spread, phase]);
+
   useEffect(() => {
     setPhase("stacked");
 
@@ -58,6 +90,7 @@ const GamifiedList: React.FC = () => {
 
     const t2 = setTimeout(() => {
       setSpread(true);
+      updateScrollButtons();
     }, 1000);
     return () => {
       clearTimeout(t);
@@ -91,55 +124,118 @@ const GamifiedList: React.FC = () => {
   const isSpread = spread;
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
+  function scrollContainer(amount: any) {
+    const container = document.getElementById("list");
+    container?.scrollBy({
+      left: amount,
+      behavior: "smooth",
+    });
+    console.log("clicked", container);
+  }
+
   return (
-    //  @ts-ignore
-    <ul id="list" ref={drop}>
-      {unsortedCards.map((card, index) => {
-        const stackPos = STACK_POSITIONS[index % 10];
-        const spread = getSpreadTransform(index);
+    <>
+      {canScrollLeft && (
+        <button
+          id="scroll-left"
+          onClick={() => scrollContainer(-300)}
+          style={{
+            position: "fixed",
+            left: "3rem",
+            bottom: "6rem",
+            margin: "2rem",
 
-        const stackTransform = `translateX(0) translateY(54px) rotate(${stackPos.rot})`;
+            color: "#352466",
+            background: "#35246616",
+            border: "0px solid #00000232",
+            padding: "0.7rem",
+            borderRadius: "100%",
+            zIndex: 99999999999,
+            pointerEvents: "auto",
+          }}
+        >
+          <span className="material-symbols-outlined">keyboard_arrow_left</span>
+        </button>
+      )}
+      {/*  @ts-ignore */}
+      <ul
+        id="list"
+        ref={(node) => {
+          drop(node);
+          listRef.current = node;
+        }}
+      >
+        {unsortedCards.map((card, index) => {
+          const stackPos = STACK_POSITIONS[index % 10];
+          const spread = getSpreadTransform(index);
 
-        const cardWidth = 165;
-        const overlapPx = -30;
-        const step = cardWidth + overlapPx;
+          const stackTransform = `translateX(0) translateY(54px) rotate(${stackPos.rot})`;
 
-        const spreadOffsetX = index * step;
+          const cardWidth = 165;
+          const overlapPx = -30;
+          const step = cardWidth + overlapPx;
 
-        const spreadTransform = `translateX(${spreadOffsetX}px) translateY(${spread.ty}) rotate(${spread.rot})`;
-        return (
-          <div
-            className={
-              (isSpreading || isStacked) && !isSpread
-                ? "cards stacked "
-                : "cards "
-            }
-            key={card.id}
-            onMouseEnter={() => setHoveredId(card.id)}
-            onMouseLeave={() => setHoveredId(null)}
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: isStacked ? "50%" : "0",
-              zIndex: hoveredId === card.id ? 9999999 : 9999 + index,
-              transform: isSpreading ? spreadTransform : stackTransform,
-              transition: isSpreading
-                ? `transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) ${index * 25}ms,left 0.25s linear `
-                : "none",
-            }}
-          >
-            <GamifiedCardItem
+          const spreadOffsetX = index * step;
+
+          const spreadTransform = `translateX(${spreadOffsetX}px) translateY(${spread.ty}) rotate(${spread.rot})`;
+          return (
+            <div
+              className={
+                (isSpreading || isStacked) && !isSpread
+                  ? "cards stacked "
+                  : "cards "
+              }
               key={card.id}
-              id={card.id}
-              title={card.name}
-              description={card.description}
-              position={-1}
-              minimized={false}
-            />
-          </div>
-        );
-      })}
-    </ul>
+              onMouseEnter={() => setHoveredId(card.id)}
+              onMouseLeave={() => setHoveredId(null)}
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: isStacked ? "50%" : "0",
+                zIndex: hoveredId === card.id ? 9999999 : 9999 + index,
+                transform: isSpreading ? spreadTransform : stackTransform,
+                transition: isSpreading
+                  ? `transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) ${index * 25}ms,left 0.25s linear `
+                  : "none",
+              }}
+            >
+              <GamifiedCardItem
+                key={card.id}
+                id={card.id}
+                title={card.name}
+                description={card.description}
+                position={-1}
+                minimized={false}
+              />
+            </div>
+          );
+        })}
+      </ul>
+      {canScrollRight && (
+        <button
+          id="scroll-right"
+          onClick={() => scrollContainer(+300)}
+          style={{
+            position: "fixed",
+            bottom: "6rem",
+            right: "3rem",
+            margin: "2rem",
+
+            color: "#352466",
+            background: "#35246616",
+            border: "0px solid #00000232",
+            padding: "0.7rem",
+            borderRadius: "100%",
+            zIndex: 99999999999,
+            pointerEvents: "auto",
+          }}
+        >
+          <span className="material-symbols-outlined">
+            keyboard_arrow_right
+          </span>
+        </button>
+      )}
+    </>
   );
 };
 

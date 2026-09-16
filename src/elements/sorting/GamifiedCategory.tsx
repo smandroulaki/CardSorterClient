@@ -354,11 +354,10 @@ const GamifiedCategory: React.FC<CategoryProps> = ({
               top: "100%",
               right: 0,
               background: "#fff",
-              border: "1px solid #e5e7eb",
               borderRadius: 25,
               padding: "1rem",
               boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
-              zIndex: 100,
+              zIndex: 9,
               minWidth: 180,
             }}
           >
