@@ -80,10 +80,16 @@ const GamifiedBoard = ({ activeCategory }: BoardProps) => {
 
     if (entries.length === 0) return categoryOrder.length;
 
-    // Find which row the cursor is in (closest row by vertical center)
+    // If the cursor is below the lowest row, insert at the end
+    const lowestBottom = Math.max(...entries.map((e) => e.rect.bottom));
+    if (clientOffset.y > lowestBottom) {
+      return categoryOrder.length;
+    }
+
     const rowTops = [
       ...new Set(entries.map((e) => Math.round(e.rect.top / 10) * 10)),
     ];
+
     const cursorRowTop = rowTops.reduce(
       (closest, top) =>
         Math.abs(top - clientOffset.y) < Math.abs(closest - clientOffset.y)
