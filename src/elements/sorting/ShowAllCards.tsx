@@ -6,8 +6,11 @@ import Button from "@mui/material/Button";
 import StateSchema from "reducers/StateSchema";
 import CardContent from "./CardContent";
 import { playSound } from "../../utils/audio/sounds";
+import { useTranslations } from "next-intl";
 
 const ShowAllCards = () => {
+  const t = useTranslations("SortingPage");
+
   const dispatch = useDispatch();
 
   const [close, setClose] = useState(false);
@@ -30,6 +33,10 @@ const ShowAllCards = () => {
       dispatch(uiAction.toggleOnBoardingPartTwo(true));
     }, animationDelay + animationDuration);
   };
+
+  const showOnboarding = useSelector(
+    (state: StateSchema) => state.sortingUi.showOnBoarding,
+  );
 
   const unsortedCards = useSelector(
     (state: StateSchema) => state.sortingBoard.unsortedCards,
@@ -78,7 +85,7 @@ const ShowAllCards = () => {
       </ul>
       <div className="start-btn">
         <Button variant="contained" onClick={onStartClick}>
-          {"Start Sorting"}
+          {!showOnboarding ? t("button continue") : t("button start")}
         </Button>
       </div>
     </div>

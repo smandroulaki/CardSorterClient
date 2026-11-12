@@ -208,7 +208,9 @@
     "confirm cancellation": "confirm cancellation",
     "yes": "Yes",
     "no": "No",
-    "are you sure you want to discard changes": "Are you sure you want to discard changes?"
+    "are you sure you want to discard changes": "Are you sure you want to discard changes?",
+    "button start": "Start Sorting",
+    "button continue": "Continue Sorting"
   },
   "SettingsPage": {
     "title": "Edit profile",
