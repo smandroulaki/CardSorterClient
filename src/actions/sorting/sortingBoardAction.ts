@@ -27,6 +27,7 @@ export const removeCardFromCategory = createAction<{
   cardID: number;
   categoryID: number;
   preserve?: boolean;
+  insertAtIndex?: number;
 }>("sortingBoard/removeCardFromCategory");
 export const createCategory = createAction<{
   categoryID?: number;
@@ -66,3 +67,8 @@ export const requestCards = createAction<{
 export const reorderCategories = createAction<{ orderedIDs: number[] }>(
   "sortingBoard/reorderCategories",
 );
+
+export const reorderUnsortedCards = createAction<{
+  cardID: number;
+  toIndex: number;
+}>("sortingBoard/reorderUnsortedCards");

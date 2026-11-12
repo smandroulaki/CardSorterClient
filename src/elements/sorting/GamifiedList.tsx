@@ -6,6 +6,7 @@ import StateSchema from "reducers/StateSchema";
 import * as sortingBoardAction from "actions/sorting/sortingBoardAction";
 import { playSound } from "../../utils/audio/sounds";
 import GamifiedCardItem from "./GamifiedCardItem";
+import DragScrollButton from "./DragScrollButton";
 
 const GamifiedList: React.FC = () => {
   // State
@@ -22,27 +23,55 @@ const GamifiedList: React.FC = () => {
   // Dispatch
   const dispatch = useDispatch();
 
+  const listRef = useRef<HTMLUListElement | null>(null);
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+
+  const cardWidth = 165;
+  const overlap = -30;
+  const step = cardWidth + overlap;
+  const GAP = 30;
+
+  const getInsertIndex = (monitor: DropTargetMonitor): number => {
+    const offset = monitor.getClientOffset();
+    const el = listRef.current;
+    if (!offset || !el) return unsortedCards.length;
+
+    const x = offset.x - el.getBoundingClientRect().left + el.scrollLeft;
+
+    // Insert before the first card whose center is right of the cursor
+    const right = Math.ceil((x - cardWidth / 2) / step);
+    return Math.max(0, Math.min(unsortedCards.length, right));
+  };
+
   const [{ isOver }, drop] = useDrop({
     accept: "card-drag",
-    drop: (
-      item: { id: number; position: number },
-      monitor: DropTargetMonitor,
-    ) => {
-      // If the card is already in container
-      if (item.position === -1) return;
+    hover: (_item: { id: number; position: number }, monitor) => {
+      const idx = getInsertIndex(monitor);
+      setHoverIndex((prev) => (prev === idx ? prev : idx));
+    },
+    drop: (item: { id: number; position: number }, monitor) => {
+      const toIndex = getInsertIndex(monitor);
+      setHoverIndex(null);
       playSound("play");
 
-      dispatch(
-        sortingBoardAction.removeCardFromCategory({
-          cardID: item.id,
-          categoryID: item.position,
-          preserve: sortType === "closed",
-        }),
-      );
+      if (item.position === -1) {
+        // Reorder within the unsorted list
+        dispatch(
+          sortingBoardAction.reorderUnsortedCards({ cardID: item.id, toIndex }),
+        );
+      } else {
+        // Move from a category into a specific position
+        dispatch(
+          sortingBoardAction.removeCardFromCategory({
+            cardID: item.id,
+            categoryID: item.position,
+            preserve: sortType === "closed",
+            insertAtIndex: toIndex,
+          }),
+        );
+      }
     },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-    }),
+    collect: (monitor) => ({ isOver: monitor.isOver() }),
   });
 
   const [phase, setPhase] = useState("stacked");
@@ -50,7 +79,6 @@ const GamifiedList: React.FC = () => {
 
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-  const listRef = useRef<HTMLUListElement | null>(null);
 
   const updateScrollButtons = () => {
     const container = listRef.current;
@@ -135,11 +163,17 @@ const GamifiedList: React.FC = () => {
     });
   }
 
+  useEffect(() => {
+    if (!isOver) setHoverIndex(null);
+  }, [isOver]);
+
   return (
     <>
       {canScrollLeft && (
-        <button
-          id="scroll-left"
+        <DragScrollButton
+          direction="left"
+          icon="keyboard_arrow_left"
+          listRef={listRef}
           onClick={() => scrollContainer(-300)}
           style={{
             position: "fixed",
@@ -160,9 +194,7 @@ const GamifiedList: React.FC = () => {
             pointerEvents: "auto",
             boxShadow: "0px 0px 20px 2px #63606048",
           }}
-        >
-          <span className="material-symbols-outlined">keyboard_arrow_left</span>
-        </button>
+        />
       )}
       {/*  @ts-ignore */}
       <ul
@@ -182,9 +214,12 @@ const GamifiedList: React.FC = () => {
           const overlapPx = -30;
           const step = cardWidth + overlapPx;
 
-          const spreadOffsetX = index * step;
+          // const spreadOffsetX = index * step;
+          const gap = hoverIndex !== null && index >= hoverIndex ? GAP : 0;
+          const spreadOffsetX = index * step + gap;
 
           const spreadTransform = `translateX(${spreadOffsetX}px) translateY(${spread.ty}) rotate(${spread.rot})`;
+
           return (
             <div
               className={
@@ -202,7 +237,7 @@ const GamifiedList: React.FC = () => {
                 zIndex: hoveredId === card.id ? 9999999 : 9999 + index,
                 transform: isSpreading ? spreadTransform : stackTransform,
                 transition: isSpreading
-                  ? `transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) ${index * 25}ms,left 0.25s linear `
+                  ? `transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) ${index * 25}ms, left 0.25s linear `
                   : "none",
               }}
             >
@@ -219,8 +254,10 @@ const GamifiedList: React.FC = () => {
         })}
       </ul>
       {canScrollRight && (
-        <button
-          id="scroll-right"
+        <DragScrollButton
+          direction="right"
+          icon="keyboard_arrow_right"
+          listRef={listRef}
           onClick={() => scrollContainer(+300)}
           style={{
             position: "fixed",
@@ -241,11 +278,7 @@ const GamifiedList: React.FC = () => {
             pointerEvents: "auto",
             boxShadow: "0px 0px 20px 2px #63606048",
           }}
-        >
-          <span className="material-symbols-outlined">
-            keyboard_arrow_right
-          </span>
-        </button>
+        />
       )}
     </>
   );

@@ -119,6 +119,7 @@ export default createReducer(initialState, (builder) => {
     .addCase(sortingBoardAction.removeCardFromCategory, (state, action) => {
       const cardID = action.payload.cardID;
       const categoryID = action.payload.categoryID;
+      const insertAtIndex = action.payload.insertAtIndex;
 
       const card = state.categories[categoryID].cards.find(
         (card) => card.id === cardID,
@@ -128,7 +129,16 @@ export default createReducer(initialState, (builder) => {
         state.categories[categoryID].cards = state.categories[
           categoryID
         ].cards.filter((card) => card.id !== cardID);
-        state.unsortedCards.push(card);
+
+        const at = Math.max(
+          0,
+          Math.min(
+            insertAtIndex ?? state.unsortedCards.length,
+            state.unsortedCards.length,
+          ),
+        );
+        state.unsortedCards.splice(at, 0, card);
+        // state.unsortedCards.push(card);
 
         // Remove empty non-predefined categories
         const category = state.categories[categoryID];
@@ -171,6 +181,15 @@ export default createReducer(initialState, (builder) => {
     })
     .addCase(sortingBoardAction.reorderCategories, (state, action) => {
       state.categoryOrder = action.payload.orderedIDs;
+    })
+    .addCase(sortingBoardAction.reorderUnsortedCards, (state, action) => {
+      const { cardID, toIndex } = action.payload;
+      const from = state.unsortedCards.findIndex((card) => card.id === cardID);
+      if (from === -1) return;
+
+      const [moved] = state.unsortedCards.splice(from, 1);
+      const insertAt = from < toIndex ? toIndex - 1 : toIndex;
+      state.unsortedCards.splice(insertAt, 0, moved);
     })
     .addCase(loadCategories, (state, action) => {
       state.categories = {};
