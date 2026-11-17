@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { DropTargetMonitor, useDrop, useDragLayer } from "react-dnd";
-
-import Category from "./Category";
+import { useDndContext, useDndMonitor, useDroppable } from "@dnd-kit/core";
 import { useDispatch, useSelector } from "react-redux";
 import StateSchema from "reducers/StateSchema";
 import * as sortingBoardAction from "actions/sorting/sortingBoardAction";
@@ -60,14 +58,16 @@ const GamifiedBoard = ({ activeCategory }: BoardProps) => {
 
   const categoryRefs = useRef<Record<number, HTMLElement | null>>({});
 
-  const { isDraggingCard, clientOffset } = useDragLayer((monitor) => ({
-    isDraggingCard:
-      monitor.isDragging() && monitor.getItemType() === "card-drag",
-    clientOffset: monitor.getClientOffset(),
-  }));
+  const { active } = useDndContext();
+  const isDraggingCard = active?.data.current?.type === "card";
 
   const getInsertIndex = (): number => {
-    if (!clientOffset) return categoryOrder.length;
+    const activeRect = active?.rect.current.translated;
+    if (!activeRect) return categoryOrder.length;
+    const point = {
+      x: activeRect.left + activeRect.width / 2,
+      y: activeRect.top + activeRect.height / 2,
+    };
     // Group categories into rows by their top position
     const entries = categoryOrder
       .map((id, index) => {
@@ -82,7 +82,7 @@ const GamifiedBoard = ({ activeCategory }: BoardProps) => {
 
     // If the cursor is below the lowest row, insert at the end
     const lowestBottom = Math.max(...entries.map((e) => e.rect.bottom));
-    if (clientOffset.y > lowestBottom) {
+    if (point.y > lowestBottom) {
       return categoryOrder.length;
     }
 
@@ -92,9 +92,7 @@ const GamifiedBoard = ({ activeCategory }: BoardProps) => {
 
     const cursorRowTop = rowTops.reduce(
       (closest, top) =>
-        Math.abs(top - clientOffset.y) < Math.abs(closest - clientOffset.y)
-          ? top
-          : closest,
+        Math.abs(top - point.y) < Math.abs(closest - point.y) ? top : closest,
       rowTops[0],
     );
     // Filter to only entries on that row
@@ -104,7 +102,7 @@ const GamifiedBoard = ({ activeCategory }: BoardProps) => {
 
     // Within the row, find insert position by x
     for (const entry of rowEntries) {
-      if (clientOffset.x < entry.rect.left + entry.rect.width / 2) {
+      if (point.x < entry.rect.left + entry.rect.width / 2) {
         return entry.index;
       }
     }
@@ -142,54 +140,80 @@ const GamifiedBoard = ({ activeCategory }: BoardProps) => {
     playSound("table");
   };
 
-  const [{ isOver }, dropRef] = useDrop({
-    accept: "card-drag",
-    drop: (card: { id: number; position: any }, monitor: DropTargetMonitor) => {
-      if (
-        !monitor.didDrop() &&
-        (sortType === "open" || sortType === "hybrid")
-      ) {
-        if (card.position > -1) {
-          // The card belongs to a category
+  const { isOver, setNodeRef } = useDroppable({
+    id: "sorting-board",
+    data: { type: "board" },
+  });
 
+  useDndMonitor({
+    onDragEnd: ({ active: dragged, over }) => {
+      const data = dragged.data.current;
+      if (
+        data?.type !== "card" ||
+        typeof data.cardID !== "number" ||
+        typeof data.position !== "number" ||
+        !over
+      ) {
+        return;
+      }
+
+      const cardID = data.cardID;
+      const position = data.position;
+      if (
+        over.data.current?.type === "category" &&
+        typeof over.data.current.categoryID === "number"
+      ) {
+        const categoryID = over.data.current.categoryID;
+        if (categoryID === position) return;
+
+        if (position > -1) {
           dispatch(
             sortingBoardAction.removeCardFromCategory({
-              cardID: card.id,
-              categoryID: card.position,
+              cardID,
+              categoryID: position,
+            }),
+          );
+        }
+        dispatch(sortingBoardAction.addCardToCategory({ cardID, categoryID }));
+        handleSortAnimation();
+      } else if (
+        over.id === "sorting-board" &&
+        (sortType === "open" || sortType === "hybrid")
+      ) {
+        if (position > -1) {
+          // The card belongs to a category
+          dispatch(
+            sortingBoardAction.removeCardFromCategory({
+              cardID,
+              categoryID: position,
               preserve: false,
             }),
           );
         }
-
         dispatch(
           sortingBoardAction.createCategory({
-            categoryID: undefined,
-            cardID: card.id,
+            cardID,
             insertAtIndex: getInsertIndex(),
           }),
         );
         handleSortAnimation();
+      } else {
+        return;
       }
-
       // Remove empty categories
       if (sortType === "open") {
-        for (const i in categories) {
-          if (categories[i].cards.length < 1) {
-            // Only one category can be empty on each state update
-            dispatch(
-              sortingBoardAction.removeCategory({
-                categoryID: categories[i].id,
-              }),
-            );
-
-            break;
-          }
+        const emptyCategory = Object.values(categories).find(
+          (category) => category.cards.length < 1 && category.id !== position,
+        );
+        if (emptyCategory) {
+          dispatch(
+            sortingBoardAction.removeCategory({
+              categoryID: emptyCategory.id,
+            }),
+          );
         }
       }
     },
-    collect: (monitor: DropTargetMonitor) => ({
-      isOver: monitor.isOver({ shallow: true }),
-    }),
   });
   Object.values(categories).forEach((category) => {
     if (!Array.isArray(category.cards)) {
@@ -201,8 +225,7 @@ const GamifiedBoard = ({ activeCategory }: BoardProps) => {
     <>
       <ProgressBar />
 
-      {/* @ts-ignore */}
-      <div id="board" ref={dropRef} className="category-board">
+      <div id="board" ref={setNodeRef} className="category-board">
         <SortableContext items={categoryOrder} strategy={rectSortingStrategy}>
           {isOver &&
             (sortType === "open" || sortType === "hybrid") &&
@@ -224,7 +247,6 @@ const GamifiedBoard = ({ activeCategory }: BoardProps) => {
                   cards={category.cards}
                   color={category.color}
                   predefined={category.predefined}
-                  onSortAnimation={handleSortAnimation}
                   innerRef={(el) => {
                     categoryRefs.current[id] = el;
                   }}
@@ -244,7 +266,14 @@ const GamifiedBoard = ({ activeCategory }: BoardProps) => {
         </SortableContext>
 
         <DragOverlay>
-          {activeCategory ? (
+          {isDraggingCard && active?.data.current ? (
+            <li className="card dragging-overlay">
+              <h4>{active.data.current.title}</h4>
+              {active.data.current.description && (
+                <p>{active.data.current.description}</p>
+              )}
+            </li>
+          ) : activeCategory ? (
             <GamifiedCategory
               id={activeCategory.id}
               title={activeCategory.title}
@@ -255,12 +284,6 @@ const GamifiedBoard = ({ activeCategory }: BoardProps) => {
             />
           ) : null}
         </DragOverlay>
-        {/* {isOver && (sortType === "open" || sortType === "hybrid") && (
-          <div className="category drop-to-create">
-            <span className="material-symbols-outlined">add</span>
-            <p>{t("drop to create category")}</p>
-          </div>
-        )} */}
         <div className={`clap-animation${showClap ? " active" : ""}`}>👏</div>
         <div className={`fire-animation${showFire ? " active" : ""}`}>🔥</div>
       </div>

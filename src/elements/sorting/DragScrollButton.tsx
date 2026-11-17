@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useDrop } from "react-dnd";
+import { useDndContext, useDroppable } from "@dnd-kit/core";
 
 interface DragScrollButtonProps {
   direction: "left" | "right";
@@ -17,13 +17,15 @@ const DragScrollButton: React.FC<DragScrollButtonProps> = ({
   style,
   icon,
 }) => {
-  const [{ isOver }, drop] = useDrop({
-    accept: "card-drag",
-    collect: (monitor) => ({ isOver: monitor.isOver() }),
+  const { active } = useDndContext();
+  const { isOver, setNodeRef } = useDroppable({
+    id: `scroll-${direction}`,
+    data: { type: "scroll-button" },
   });
+  const isOverCard = isOver && active?.data.current?.type === "card";
 
   useEffect(() => {
-    if (!isOver) return;
+    if (!isOverCard) return;
 
     let frame: number;
     const tick = () => {
@@ -35,17 +37,16 @@ const DragScrollButton: React.FC<DragScrollButtonProps> = ({
     frame = requestAnimationFrame(tick);
 
     return () => cancelAnimationFrame(frame);
-  }, [isOver, direction, listRef]);
+  }, [isOverCard, direction, listRef]);
 
   return (
     <button
-      // @ts-ignore (same ref typing issue as your <ul>)
-      ref={drop}
+      ref={setNodeRef}
       id={`scroll-${direction}`}
       onClick={onClick}
       style={{
         ...style,
-        transform: isOver ? "scale(1.2)" : "scale(1)",
+        transform: isOverCard ? "scale(1.2)" : "scale(1)",
         transition: "transform 0.15s ease",
       }}
     >

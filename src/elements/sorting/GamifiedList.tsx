@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import { DropTargetMonitor, useDrop } from "react-dnd";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useDndMonitor, useDroppable } from "@dnd-kit/core";
 import { useDispatch, useSelector } from "react-redux";
 import StateSchema from "reducers/StateSchema";
 import * as sortingBoardAction from "actions/sorting/sortingBoardAction";
@@ -12,9 +12,6 @@ const GamifiedList: React.FC = () => {
   // State
   const unsortedCards = useSelector(
     (state: StateSchema) => state.sortingBoard.unsortedCards,
-  );
-  const categories = useSelector(
-    (state: StateSchema) => state.sortingBoard.categories,
   );
   const sortType = useSelector(
     (state: StateSchema) => state.sortingUi?.sortType ?? "open",
@@ -31,47 +28,89 @@ const GamifiedList: React.FC = () => {
   const step = cardWidth + overlap;
   const GAP = 30;
 
-  const getInsertIndex = (monitor: DropTargetMonitor): number => {
-    const offset = monitor.getClientOffset();
+  const getInsertIndex = (
+    activeRect?: Pick<DOMRect, "left" | "width" | "top" | "height"> | null,
+  ): number => {
     const el = listRef.current;
-    if (!offset || !el) return unsortedCards.length;
+    if (!activeRect || !el) return unsortedCards.length;
 
-    const x = offset.x - el.getBoundingClientRect().left + el.scrollLeft;
+    const x =
+      activeRect.left +
+      activeRect.width / 2 -
+      el.getBoundingClientRect().left +
+      el.scrollLeft;
 
     // Insert before the first card whose center is right of the cursor
     const right = Math.ceil((x - cardWidth / 2) / step);
     return Math.max(0, Math.min(unsortedCards.length, right));
   };
 
-  const [{ isOver }, drop] = useDrop({
-    accept: "card-drag",
-    hover: (_item: { id: number; position: number }, monitor) => {
-      const idx = getInsertIndex(monitor);
+  const isWithinCardRow = (
+    activeRect?: Pick<DOMRect, "top" | "height"> | null,
+  ): boolean => {
+    const list = listRef.current;
+    const cards = list?.querySelectorAll<HTMLLIElement>(".cards > .card");
+    if (!activeRect || !cards?.length) return false;
+
+    const cardRects = Array.from(cards, (card) => card.getBoundingClientRect());
+    const top = Math.min(...cardRects.map((rect) => rect.top));
+    const bottom = Math.max(...cardRects.map((rect) => rect.bottom));
+    const centerY = activeRect.top + activeRect.height / 2;
+    return centerY >= top && centerY <= bottom;
+  };
+
+  const { isOver, setNodeRef } = useDroppable({
+    id: "unsorted-list",
+    data: { type: "unsorted-list" },
+  });
+
+  useDndMonitor({
+    onDragMove: ({ active }) => {
+      if (active.data.current?.type !== "card") {
+        return;
+      }
+      const rect = active.rect.current.translated;
+      if (!isWithinCardRow(rect)) {
+        return;
+      }
+      const idx = getInsertIndex(rect);
       setHoverIndex((prev) => (prev === idx ? prev : idx));
     },
-    drop: (item: { id: number; position: number }, monitor) => {
-      const toIndex = getInsertIndex(monitor);
+    onDragEnd: ({ active, over }) => {
+      const data = active.data.current;
+      if (
+        data?.type !== "card" ||
+        typeof data.cardID !== "number" ||
+        typeof data.position !== "number" ||
+        over?.id !== "unsorted-list"
+      ) {
+        setHoverIndex(null);
+        return;
+      }
+
+      const toIndex = getInsertIndex(active.rect.current.translated);
       setHoverIndex(null);
       playSound("play");
 
-      if (item.position === -1) {
-        // Reorder within the unsorted list
+      if (data.position === -1) {
         dispatch(
-          sortingBoardAction.reorderUnsortedCards({ cardID: item.id, toIndex }),
+          sortingBoardAction.reorderUnsortedCards({
+            cardID: data.cardID,
+            toIndex,
+          }),
         );
       } else {
-        // Move from a category into a specific position
         dispatch(
           sortingBoardAction.removeCardFromCategory({
-            cardID: item.id,
-            categoryID: item.position,
+            cardID: data.cardID,
+            categoryID: data.position,
             preserve: sortType === "closed",
             insertAtIndex: toIndex,
           }),
         );
       }
     },
-    collect: (monitor) => ({ isOver: monitor.isOver() }),
+    onDragCancel: () => setHoverIndex(null),
   });
 
   const [phase, setPhase] = useState("stacked");
@@ -163,12 +202,20 @@ const GamifiedList: React.FC = () => {
     });
   }
 
+  const setListRefs = useCallback(
+    (node: HTMLUListElement | null) => {
+      setNodeRef(node);
+      listRef.current = node;
+    },
+    [setNodeRef],
+  );
+
   useEffect(() => {
     if (!isOver) setHoverIndex(null);
   }, [isOver]);
 
   return (
-    <>
+    <div className="list-wrapper">
       {canScrollLeft && (
         <DragScrollButton
           direction="left"
@@ -196,14 +243,7 @@ const GamifiedList: React.FC = () => {
           }}
         />
       )}
-      {/*  @ts-ignore */}
-      <ul
-        id="list"
-        ref={(node) => {
-          drop(node);
-          listRef.current = node;
-        }}
-      >
+      <ul id="list" ref={setListRefs}>
         {unsortedCards.map((card, index) => {
           const stackPos = STACK_POSITIONS[index % 10];
           const spread = getSpreadTransform(index);
@@ -280,7 +320,7 @@ const GamifiedList: React.FC = () => {
           }}
         />
       )}
-    </>
+    </div>
   );
 };
 

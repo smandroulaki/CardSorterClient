@@ -3,22 +3,17 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 
 import {
   DndContext,
   DragEndEvent,
   DragStartEvent,
-  DragOverEvent,
-  DragOverlay,
   useSensor,
   useSensors,
   PointerSensor,
-  closestCenter,
+  pointerWithin,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import List from "elements/sorting/List";
 import * as uiActions from "actions/sorting/uiAction";
 import * as sortingBoardAction from "actions/sorting/sortingBoardAction";
 import StateSchema from "reducers/StateSchema";
@@ -32,22 +27,11 @@ import LoadSortData from "elements/sorting/LoadSortData";
 import { useParams } from "next/navigation";
 import ShowAllCards from "elements/sorting/ShowAllCards";
 import OnBoardingPartTwo from "elements/sorting/OnBoardingPartTwo";
-import { PointerSensor as DndKitPointerSensor } from "@dnd-kit/core";
 import { playSound } from "utils/audio/sounds";
 import GamifiedBoard from "elements/sorting/GamifiedBoard";
 import GamifiedList from "elements/sorting/GamifiedList";
 import OnBoardingPartOne from "elements/sorting/OnBoardingPartOne";
 
-class DragHandleSensor extends DndKitPointerSensor {
-  static activators = [
-    {
-      eventName: "onPointerDown" as const,
-      handler: ({ nativeEvent }: React.PointerEvent): boolean => {
-        return !!(nativeEvent.target as HTMLElement).closest(".drag-handle");
-      },
-    },
-  ];
-}
 export default function page() {
   const { id } = useParams<{ id: string }>();
   const t = useTranslations("SortingPage");
@@ -96,20 +80,32 @@ export default function page() {
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
   const activeCategory = activeCategoryId ? categories[activeCategoryId] : null;
 
-  const sensors = useSensors(useSensor(DragHandleSensor));
+  const pointerOptions = { activationConstraint: { distance: 6 } };
+
+  const sensors = useSensors(useSensor(PointerSensor, pointerOptions));
 
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveCategoryId(event.active.id as number);
+    if (event.active.data.current?.type === "category") {
+      setActiveCategoryId(event.active.id as number);
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveCategoryId(null);
 
     const { active, over } = event;
-    if (!over || active.id === over.id) return;
+    if (
+      active.data.current?.type !== "category" ||
+      !over ||
+      over.data.current?.type !== "category" ||
+      active.id === over.id
+    ) {
+      return;
+    }
 
     const oldIndex = categoryOrder.indexOf(active.id as number);
     const newIndex = categoryOrder.indexOf(over.id as number);
+    if (oldIndex < 0 || newIndex < 0) return;
     const newOrder = arrayMove(categoryOrder, oldIndex, newIndex);
     playSound("hand");
     dispatch(sortingBoardAction.reorderCategories({ orderedIDs: newOrder }));
@@ -135,21 +131,22 @@ export default function page() {
       <LoadSortData id={id} />
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCenter}
+        collisionDetection={pointerWithin}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
+        autoScroll={{
+          canScroll: (element) => element.id !== "list",
+        }}
       >
-        <DndProvider backend={HTML5Backend}>
-          <div id="main-panel">
-            {(!showOnboarding || showOnboardingPartTwo) && !showAllCards && (
-              <GamifiedBoard activeCategory={activeCategory} />
-            )}
-            {(!showOnboarding || showOnboardingPartTwo) && !showAllCards && (
-              <GamifiedList />
-            )}
-          </div>
-        </DndProvider>
+        <div id="main-panel">
+          {(!showOnboarding || showOnboardingPartTwo) && !showAllCards && (
+            <GamifiedBoard activeCategory={activeCategory} />
+          )}
+          {(!showOnboarding || showOnboardingPartTwo) && !showAllCards && (
+            <GamifiedList />
+          )}
+        </div>
       </DndContext>
       <CommentPopup />
       <DescriptionPopup />

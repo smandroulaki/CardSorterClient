@@ -1,5 +1,5 @@
 import React, { MouseEvent } from "react";
-import { useDrag } from "react-dnd";
+import { useDraggable } from "@dnd-kit/core";
 import { useDispatch } from "react-redux";
 import * as sortingBoardAction from "../../actions/sorting/sortingBoardAction";
 import IconButton from "@mui/material/IconButton";
@@ -32,21 +32,26 @@ const GamifiedCardItem: React.FC<CardItemProps> = ({
     }
   };
 
-  const [{ isDragging }, dragRef] = useDrag(() => ({
-    type: "card-drag",
-    item: { id, position },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }));
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `card-${id}`,
+    data: {
+      type: "card",
+      cardID: id,
+      position,
+      title,
+      description,
+    },
+  });
 
   return (
     <li
-      // @ts-ignore
-      ref={dragRef}
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
       className={`${!minimized ? "card" : "card minimized"} ${
         isDragging ? "dragging" : ""
       }`}
+      style={{ touchAction: "none" }}
     >
       {/* Show the description */}
       {!minimized && (

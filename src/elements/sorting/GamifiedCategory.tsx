@@ -2,11 +2,11 @@ import React, {
   ChangeEvent,
   KeyboardEvent,
   MouseEvent,
+  useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
-import { useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 
 import StateSchema from "reducers/StateSchema";
@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl";
 import * as uiActions from "actions/sorting/uiAction";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
+import { useDndContext } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import GamifiedCardItem from "./GamifiedCardItem";
@@ -26,9 +27,7 @@ interface CategoryProps {
   color?: string;
   cards: SortingCard[];
   predefined?: boolean;
-  insertAtIndex?: number;
   isOverlay?: boolean;
-  onSortAnimation?: () => void;
   innerRef?: (el: HTMLLIElement | null) => void;
 }
 
@@ -39,8 +38,6 @@ const GamifiedCategory: React.FC<CategoryProps> = ({
   cards,
   predefined,
   isOverlay,
-  insertAtIndex,
-  onSortAnimation,
   innerRef,
 }) => {
   const t = useTranslations("SortingPage");
@@ -122,7 +119,14 @@ const GamifiedCategory: React.FC<CategoryProps> = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id, disabled: !!isOverlay });
+    isOver,
+  } = useSortable({
+    id,
+    disabled: !!isOverlay,
+    data: { type: "category", categoryID: id },
+  });
+  const { active } = useDndContext();
+  const isCardOver = isOver && active?.data.current?.type === "card";
 
   const rawTransform = CSS.Transform.toString(transform);
   const translateOnly = rawTransform
@@ -201,45 +205,16 @@ const GamifiedCategory: React.FC<CategoryProps> = ({
     return () => input.removeEventListener("change", setCategoryColor);
   }, []);
 
-  const [{ isOver }, drop] = useDrop(
-    () => ({
-      accept: "card-drag",
-      drop: (card: { id: number; position: number }) => {
-        // Remove card from any other category it may belong
-        if (card.position > -1) {
-          dispatch(
-            sortingBoardAction.removeCardFromCategory({
-              cardID: card.id,
-              categoryID: card.position,
-            }),
-          );
-        }
-
-        dispatch(
-          sortingBoardAction.addCardToCategory({
-            categoryID: id,
-            cardID: card.id,
-          }),
-        );
-        if (onSortAnimation) {
-          onSortAnimation();
-        }
-      },
-      collect: (monitor) => ({
-        isOver: monitor.isOver(),
-      }),
-    }),
-    [id],
+  const setRefs = useCallback(
+    (el: HTMLLIElement | null) => {
+      setNodeRef(el);
+      innerRef?.(el);
+    },
+    [setNodeRef, innerRef],
   );
 
-  const setRefs = (el: HTMLLIElement | null) => {
-    setNodeRef(el);
-    drop(el);
-    if (innerRef) innerRef(el);
-  };
-
   let classString = "category";
-  if (isOver) {
+  if (isCardOver) {
     classString += " max-height";
   }
   if (isMinimized) {
@@ -290,7 +265,7 @@ const GamifiedCategory: React.FC<CategoryProps> = ({
           </h3>
         )}
       </div>
-      {isOver && (
+      {isCardOver && (
         <div className="drop-to-add">
           <span className="material-symbols-outlined">add</span>
           <p>{t("drop to add")}</p>
