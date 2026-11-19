@@ -8,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { createContext, useContext } from "react";
 
 import StateSchema from "reducers/StateSchema";
 import * as sortingBoardAction from "actions/sorting/sortingBoardAction";
@@ -128,7 +129,16 @@ const GamifiedCategory: React.FC<CategoryProps> = ({
   const { active } = useDndContext();
   const isCardOver = isOver && active?.data.current?.type === "card";
 
-  const rawTransform = CSS.Transform.toString(transform);
+  const BoardZoomContext = createContext(1);
+  const useBoardZoom = () => useContext(BoardZoomContext);
+
+  const zoom = useBoardZoom();
+
+  const scaledTransform = transform
+    ? { ...transform, x: transform.x / zoom, y: transform.y / zoom }
+    : null;
+
+  const rawTransform = CSS.Transform.toString(scaledTransform);
   const translateOnly = rawTransform
     ? rawTransform.replace(/scaleY\([^)]*\)/g, "")
     : undefined;

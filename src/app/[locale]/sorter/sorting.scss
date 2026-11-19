@@ -192,6 +192,117 @@ ul#list > :nth-child(1) > :hover {
   padding: var.$spacing-md;
   padding-right: 0 !important;
   padding-bottom: 19rem !important;
+  position: relative;
+  gap: calc(1.5rem * var(--z, 1)) !important;
+}
+
+.board-zoom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var.$gap-grid;
+}
+
+.zoom-controls {
+  position: fixed;
+  top: 0.5rem;
+  right: 45%;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+
+  button {
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 6px;
+    border: none;
+    border-radius: 999px;
+    background: none;
+    cursor: pointer;
+    font-weight: 700;
+    color: #352466;
+
+    &:hover:not(:disabled) {
+      background: #efeaf8;
+    }
+    &:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+  }
+}
+#board .category {
+  width: calc(15rem * var(--z, 1));
+  border-radius: calc(20px * var(--z, 1));
+
+  .header {
+    padding: calc(var.$spacing-md * var(--z, 1))
+      calc(var.$spacing-md * var(--z, 1)) calc(var.$spacing-sm * var(--z, 1))
+      calc(var.$spacing-xs * var(--z, 1));
+
+    h3 {
+      font-size: calc(1.125rem * var(--z, 1));
+    }
+  }
+
+  .material-symbols-outlined {
+    font-size: calc(24px * var(--z, 1));
+  }
+
+  ul {
+    gap: calc(var.$spacing-sm * var(--z, 1));
+    padding: calc(var.$spacing-xs * var(--z, 1));
+    min-height: calc(4rem * var(--z, 1));
+  }
+
+  &.minimized {
+    max-height: calc(25rem * var(--z, 1));
+  }
+
+  .card.minimized {
+    max-width: calc(13.87rem * var(--z, 1));
+    border-radius: calc(15px * var(--z, 1));
+    padding-left: calc(5px * var(--z, 1));
+
+    h4 {
+      font-size: calc(1.125rem * var(--z, 1));
+      padding-left: calc(0.5rem * var(--z, 1));
+    }
+
+    p {
+      font-size: calc(1rem * var(--z, 1));
+    }
+
+    button {
+      height: calc(38px * var(--z, 1));
+    }
+  }
+
+  .card-count-footer {
+    width: calc(14rem * var(--z, 1));
+    padding: calc(0.5rem * var(--z, 1));
+    font-size: calc(1rem * var(--z, 1));
+    border-bottom-left-radius: calc(20px * var(--z, 1));
+    border-bottom-right-radius: calc(20px * var(--z, 1));
+  }
+
+  &.drop-to-create {
+    height: calc(14rem * var(--z, 1));
+    border-radius: calc(20px * var(--z, 1));
+
+    p {
+      font-size: calc(1rem * var(--z, 1));
+    }
+  }
+
+  .drop-to-add {
+    border-radius: calc(20px * var(--z, 1));
+  }
 }
 
 // clap animation
@@ -321,7 +432,8 @@ li.card {
   }
 
   &.dragging-overlay {
-    transform: scale(0.9) rotate(2deg);
+    transform: scale(0.9);
+    // rotate(2deg);
     transition: all 2.5s ease;
     box-shadow:
       0 0 0 1px #00000008,
@@ -513,7 +625,7 @@ li.card {
 
   &.drop-to-create {
     align-items: center;
-    border: 1px dashed #82828245;
+    border: 2px dashed #82828245;
     border-radius: 24px;
     box-shadow: none;
     display: flex;
