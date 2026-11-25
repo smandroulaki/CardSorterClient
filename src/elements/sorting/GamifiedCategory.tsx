@@ -270,9 +270,21 @@ const GamifiedCategory: React.FC<CategoryProps> = ({
             </IconButton>
           </div>
         ) : (
-          <h3 onClick={onTitleClick} title={title}>
-            {title || t("click to rename")}
-          </h3>
+          <>
+            <h3 onClick={onTitleClick} title={title}>
+              {title || t("click to rename")}
+            </h3>
+            <IconButton
+              aria-label={isMinimized ? "Expand category" : "Collapse category"}
+              onClick={onMinimized}
+              className="minimize"
+              size="small"
+            >
+              <span className="material-symbols-outlined">
+                {isMinimized ? "expand_content" : "collapse_content"}
+              </span>
+            </IconButton>
+          </>
         )}
       </div>
       {isCardOver && (

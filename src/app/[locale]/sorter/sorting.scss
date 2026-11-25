@@ -252,7 +252,32 @@ ul#list > :nth-child(1) > :hover {
   }
 
   &.minimized {
-    max-height: calc(25rem * var(--z, 1));
+    max-height: calc(20rem * var(--z, 1));
+
+    ul {
+      overflow-y: auto;
+
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb, #888888) transparent;
+
+      &::-webkit-scrollbar {
+        width: calc(6px * var(--z, 1));
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: calc(10px * var(--z, 1));
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb, #888);
+        border-radius: calc(10px * var(--z, 1));
+
+        &:hover {
+          background: var(--scrollbar-thumb-hover, #aaa);
+        }
+      }
+    }
   }
 
   .card.minimized {
