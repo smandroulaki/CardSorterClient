@@ -3,6 +3,7 @@ import { useDndContext, useDndMonitor, useDroppable } from "@dnd-kit/core";
 import { useDispatch, useSelector } from "react-redux";
 import StateSchema from "reducers/StateSchema";
 import * as sortingBoardAction from "actions/sorting/sortingBoardAction";
+import * as uiAction from "actions/sorting/uiAction";
 import { useTranslations } from "next-intl";
 import ProgressBar from "./ProgressBar/ProgressBar";
 import { SortingCategory } from "reducers/sorting/sortingBoardReducer";
@@ -221,32 +222,17 @@ const GamifiedBoard = ({ activeCategory }: BoardProps) => {
     }
   });
 
-  const [zoom, setZoom] = useState(1);
-  const zoomIn = () => setZoom((z) => Math.min(1.5, +(z + 0.1).toFixed(2)));
-  const zoomOut = () => setZoom((z) => Math.max(0.5, +(z - 0.1).toFixed(2)));
-  const resetZoom = () => setZoom(1);
+  const zoom = useSelector((state: StateSchema) => state.sortingUi.boardZoom);
 
   return (
     <>
       <ProgressBar />
-
-      <div className="zoom-controls">
-        <button onClick={zoomOut} disabled={zoom <= 0.6} aria-label="Zoom out">
-          <span className="material-symbols-outlined">remove</span>
-        </button>
-        <button onClick={resetZoom} aria-label="Reset zoom">
-          {Math.round(zoom * 100)}%
-        </button>
-        <button onClick={zoomIn} disabled={zoom >= 1.4} aria-label="Zoom in">
-          <span className="material-symbols-outlined">add</span>
-        </button>
-      </div>
-
       <div
         id="board"
         ref={setNodeRef}
         className="category-board"
         style={{ "--z": zoom } as React.CSSProperties}
+        onClick={() => dispatch(uiAction.setCardSearchQuery(""))}
       >
         <SortableContext items={categoryOrder} strategy={rectSortingStrategy}>
           {isOver &&

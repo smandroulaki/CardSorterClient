@@ -4,8 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import * as uiAction from "actions/sorting/uiAction";
 import { useTranslations } from "next-intl";
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 import styles from "./GamifiedSortingHeader.module.scss";
 import ProgressCount from "../ProgressBar/ProgressCount";
+import { Icon, InputAdornment } from "@mui/material";
 
 const GamifiedSortingHeader = () => {
   const t = useTranslations("SortingHeader");
@@ -19,6 +21,12 @@ const GamifiedSortingHeader = () => {
   );
   const userComment = useSelector(
     (state: StateSchema) => state.sortingUi.userComment,
+  );
+  const cardSearchQuery = useSelector(
+    (state: StateSchema) => state.sortingUi.cardSearchQuery,
+  );
+  const boardZoom = useSelector(
+    (state: StateSchema) => state.sortingUi.boardZoom,
   );
 
   // Dispatch
@@ -108,6 +116,63 @@ const GamifiedSortingHeader = () => {
     >
       <h1 className={styles.logo}>Card Sorter</h1>
       <div className={styles.btnContainer}>
+        <div
+          className="zoom-controls"
+          style={onBoarding ? { pointerEvents: "none" } : {}}
+        >
+          <button
+            onClick={() =>
+              dispatch(
+                uiAction.setBoardZoom(
+                  Math.max(0.5, +(boardZoom - 0.1).toFixed(2)),
+                ),
+              )
+            }
+            disabled={boardZoom <= 0.6}
+            aria-label="Zoom out"
+          >
+            <span className="material-symbols-outlined">remove</span>
+          </button>
+          <button
+            onClick={() => dispatch(uiAction.setBoardZoom(1))}
+            aria-label="Reset zoom"
+          >
+            {Math.round(boardZoom * 100)}%
+          </button>
+          <button
+            onClick={() =>
+              dispatch(
+                uiAction.setBoardZoom(
+                  Math.min(1.5, +(boardZoom + 0.1).toFixed(2)),
+                ),
+              )
+            }
+            disabled={boardZoom >= 1.4}
+            aria-label="Zoom in"
+          >
+            <span className="material-symbols-outlined">add</span>
+          </button>
+        </div>
+        <TextField
+          size="small"
+          type="search"
+          value={cardSearchQuery}
+          placeholder={t("search cards")}
+          slotProps={{
+            htmlInput: { "aria-label": t("search cards") },
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <span className="material-symbols-outlined">search</span>
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{ width: 220 }}
+          onChange={(event) =>
+            dispatch(uiAction.setCardSearchQuery(event.target.value))
+          }
+        />
         <ProgressCount />
         <Button variant="text" onClick={onShowAllClick}>
           {t("show all")}
@@ -118,12 +183,10 @@ const GamifiedSortingHeader = () => {
         <Button variant="text" onClick={onDescriptionClick}>
           {t("show description")}
         </Button>
-
         {/* <button className="undo"></button> */}
         {/*<button className="help"></button>*/}
         {/* </div>
       <div className={styles.btnContainer}> */}
-
         <Button variant="outlined" onClick={onCommentClick}>
           {t("add comment")}
         </Button>

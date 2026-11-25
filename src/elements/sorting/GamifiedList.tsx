@@ -13,9 +13,21 @@ const GamifiedList: React.FC = () => {
   const unsortedCards = useSelector(
     (state: StateSchema) => state.sortingBoard.unsortedCards,
   );
+  const searchQuery = useSelector((state: StateSchema) =>
+    state.sortingUi.cardSearchQuery.trim().toLowerCase(),
+  );
   const sortType = useSelector(
     (state: StateSchema) => state.sortingUi?.sortType ?? "open",
   );
+  const visibleCards = unsortedCards
+    .map((card, index) => ({ card, index }))
+    .filter(
+      ({ card }) =>
+        !searchQuery ||
+        `${card.name} ${card.description ?? ""}`
+          .toLowerCase()
+          .includes(searchQuery),
+    );
 
   // Dispatch
   const dispatch = useDispatch();
@@ -41,8 +53,11 @@ const GamifiedList: React.FC = () => {
       el.scrollLeft;
 
     // Insert before the first card whose center is right of the cursor
-    const right = Math.ceil((x - cardWidth / 2) / step);
-    return Math.max(0, Math.min(unsortedCards.length, right));
+    const visibleIndex = Math.max(
+      0,
+      Math.min(visibleCards.length, Math.ceil((x - cardWidth / 2) / step)),
+    );
+    return visibleCards[visibleIndex]?.index ?? unsortedCards.length;
   };
 
   const isWithinCardRow = (
@@ -144,8 +159,13 @@ const GamifiedList: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    listRef.current?.scrollTo({ left: 0 });
     updateScrollButtons();
-  }, [unsortedCards, spread, phase]);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    updateScrollButtons();
+  }, [unsortedCards, visibleCards.length, spread, phase]);
 
   const totalCards = unsortedCards.length;
   const shadowSpreadDelay = totalCards * 30;
@@ -244,7 +264,7 @@ const GamifiedList: React.FC = () => {
         />
       )}
       <ul id="list" ref={setListRefs}>
-        {unsortedCards.map((card, index) => {
+        {visibleCards.map(({ card, index }, visiblePos) => {
           const stackPos = STACK_POSITIONS[index % 10];
           const spread = getSpreadTransform(index);
 
@@ -256,7 +276,7 @@ const GamifiedList: React.FC = () => {
 
           // const spreadOffsetX = index * step;
           const gap = hoverIndex !== null && index >= hoverIndex ? GAP : 0;
-          const spreadOffsetX = index * step + gap;
+          const spreadOffsetX = visiblePos * step + gap;
 
           const spreadTransform = `translateX(${spreadOffsetX}px) translateY(${spread.ty}) rotate(${spread.rot})`;
 

@@ -8,6 +8,8 @@ export interface SortingUIState {
   showOnBoardingPartTwo: boolean;
   onBoardingFinalStep: boolean;
   showAllCards: boolean;
+  boardZoom: number;
+  cardSearchQuery: string;
   studyID?: string;
   studyTitle: string;
   studyDescription: string;
@@ -41,6 +43,8 @@ const initialState: SortingUIState = {
   showOnBoardingPartTwo: false,
   onBoardingFinalStep: false,
   showAllCards: false,
+  boardZoom: 1,
+  cardSearchQuery: "",
   showConfirmPopUp: false,
   showDescriptionPopup: false,
   showInstructionsPopup: false,
@@ -76,6 +80,12 @@ const sortingUiReducer = createReducer(initialState, (builder) => {
     })
     .addCase(uiAction.showAllCards, (state, action) => {
       state.showAllCards = action.payload;
+    })
+    .addCase(uiAction.setBoardZoom, (state, action) => {
+      state.boardZoom = action.payload;
+    })
+    .addCase(uiAction.setCardSearchQuery, (state, action) => {
+      state.cardSearchQuery = action.payload;
     })
     .addCase(uiAction.saveStudyID, (state, action) => {
       state.studyID = action.payload.studyID;
@@ -142,6 +152,7 @@ const sortingUiReducer = createReducer(initialState, (builder) => {
       state.showCommentPopup = false;
       state.userComment = "";
       state.commentRequired = false;
+      state.cardSearchQuery = "";
       state.timeStarted = undefined;
     })
     .addCase(uiAction.loadSavedState, (state, action) => {

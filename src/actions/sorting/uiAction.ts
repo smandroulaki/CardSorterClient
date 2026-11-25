@@ -27,6 +27,10 @@ export const toggleBoardingFinalStep = createAction<boolean>(
 );
 
 export const showAllCards = createAction<boolean>("ui/showAllCards");
+export const setBoardZoom = createAction<number>("sortingUi/setBoardZoom");
+export const setCardSearchQuery = createAction<string>(
+  "sortingUi/setCardSearchQuery",
+);
 
 export const saveStudyID = createAction<{ studyID: string }>("ui/saveStudyID");
 export const saveThanksMessage = createAction<{ message: string }>(
