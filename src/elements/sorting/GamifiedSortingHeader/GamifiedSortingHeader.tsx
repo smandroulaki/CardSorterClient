@@ -25,9 +25,6 @@ const GamifiedSortingHeader = () => {
   const cardSearchQuery = useSelector(
     (state: StateSchema) => state.sortingUi.cardSearchQuery,
   );
-  const boardZoom = useSelector(
-    (state: StateSchema) => state.sortingUi.boardZoom,
-  );
 
   // Dispatch
   const dispatch = useDispatch();
@@ -116,43 +113,6 @@ const GamifiedSortingHeader = () => {
     >
       <h1 className={styles.logo}>Card Sorter</h1>
       <div className={styles.btnContainer}>
-        <div
-          className="zoom-controls"
-          style={onBoarding ? { pointerEvents: "none" } : {}}
-        >
-          <button
-            onClick={() =>
-              dispatch(
-                uiAction.setBoardZoom(
-                  Math.max(0.5, +(boardZoom - 0.1).toFixed(2)),
-                ),
-              )
-            }
-            disabled={boardZoom <= 0.6}
-            aria-label="Zoom out"
-          >
-            <span className="material-symbols-outlined">remove</span>
-          </button>
-          <button
-            onClick={() => dispatch(uiAction.setBoardZoom(1))}
-            aria-label="Reset zoom"
-          >
-            {Math.round(boardZoom * 100)}%
-          </button>
-          <button
-            onClick={() =>
-              dispatch(
-                uiAction.setBoardZoom(
-                  Math.min(1.5, +(boardZoom + 0.1).toFixed(2)),
-                ),
-              )
-            }
-            disabled={boardZoom >= 1.4}
-            aria-label="Zoom in"
-          >
-            <span className="material-symbols-outlined">add</span>
-          </button>
-        </div>
         <TextField
           size="small"
           type="search"

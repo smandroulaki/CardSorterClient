@@ -191,26 +191,40 @@ ul#list > :nth-child(1) > :hover {
   // gap: var.$gap-grid;
   height: 100%;
   // padding: var.$spacing-md;
-  padding-top: 1rem !important;
+  padding-top: 0rem !important;
   padding-right: 0 !important;
   padding-bottom: 19rem !important;
   position: relative;
-  gap: calc(1.5rem * var(--z, 1));
+  gap: calc(1.25rem * var(--z, 1)) !important;
+}
+.zoom-controls-wrapper {
+  position: sticky;
+  top: 0rem;
+  align-self: flex-end;
+  height: 0;
+  margin-right: 0.5rem;
+  padding-top: 1rem;
+  overflow: visible;
+  z-index: 20;
 }
 
 .zoom-controls {
+  position: static;
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 2px;
-  width: 7.65rem;
-  border-radius: 8px;
-  border: 1px solid #352466;
+  width: 2.5rem;
+  border-radius: 999px;
   pointer-events: auto;
+  background-color: #ffff;
+  padding: 1px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 
   button {
     min-width: 2rem;
     height: 2rem;
-    padding: 0 6px;
+    padding: 0;
     border: none;
     border-radius: 999px;
     background: none;
@@ -219,7 +233,7 @@ ul#list > :nth-child(1) > :hover {
     color: #352466;
 
     &:hover:not(:disabled) {
-      background: #efeaf8;
+      background: #d5c8eca9;
     }
     &:disabled {
       opacity: 0.35;

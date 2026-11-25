@@ -227,6 +227,38 @@ const GamifiedBoard = ({ activeCategory }: BoardProps) => {
   return (
     <>
       <ProgressBar />
+      <div className="zoom-controls-wrapper">
+        <div className="zoom-controls">
+          <button
+            onClick={() =>
+              dispatch(
+                uiAction.setBoardZoom(Math.max(0.5, +(zoom - 0.1).toFixed(2))),
+              )
+            }
+            disabled={zoom <= 0.6}
+            aria-label="Zoom out"
+          >
+            <span className="material-symbols-outlined">remove</span>
+          </button>
+          <button
+            onClick={() => dispatch(uiAction.setBoardZoom(1))}
+            aria-label="Reset zoom"
+          >
+            {Math.round(zoom * 100)}%
+          </button>
+          <button
+            onClick={() =>
+              dispatch(
+                uiAction.setBoardZoom(Math.min(1.5, +(zoom + 0.1).toFixed(2))),
+              )
+            }
+            disabled={zoom >= 1.4}
+            aria-label="Zoom in"
+          >
+            <span className="material-symbols-outlined">add</span>
+          </button>
+        </div>
+      </div>
       <div
         id="board"
         ref={setNodeRef}
